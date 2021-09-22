@@ -1,9 +1,9 @@
 <?php
 
-namespace Phlib\DbHelper\Replication;
+namespace Phlib\DbHelperReplication\Replication;
 
 /**
- * @package Phlib\DbHelper
+ * @package Phlib\DbHelperReplication
  * @licence LGPL-3.0
  */
 class Memcache implements StorageInterface

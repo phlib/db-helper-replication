@@ -1,15 +1,15 @@
 <?php
 
-namespace Phlib\DbHelper\Tests;
+namespace Phlib\DbHelperReplication;
 
-use Phlib\DbHelper\Replication;
-use Phlib\DbHelper\Replication\StorageInterface;
+use Phlib\DbHelperReplication\Replication\StorageInterface;
 use Phlib\Db\AdapterInterface;
+use Phlib\DbHelperReplication\Replication\StorageMock;
 use phpmock\phpunit\PHPMock;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @package Phlib\DbHelper
+ * @package Phlib\DbHelperReplication
  * @licence LGPL-3.0
  */
 class ReplicationTest extends TestCase
@@ -22,7 +22,7 @@ class ReplicationTest extends TestCase
     protected $master;
 
     /**
-     * @var \Phlib\DbHelper\Replication\StorageInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var StorageInterface|\PHPUnit_Framework_MockObject_MockObject
      */
     protected $storage;
 
@@ -52,7 +52,7 @@ class ReplicationTest extends TestCase
     }
 
     /**
-     * @expectedException \Phlib\DbHelper\Exception\InvalidArgumentException
+     * @expectedException \Phlib\DbHelperReplication\Exception\InvalidArgumentException
      */
     public function testCreateFromConfigWithInvalidStorageClass()
     {
@@ -62,7 +62,7 @@ class ReplicationTest extends TestCase
     }
 
     /**
-     * @expectedException \Phlib\DbHelper\Exception\InvalidArgumentException
+     * @expectedException \Phlib\DbHelperReplication\Exception\InvalidArgumentException
      */
     public function testCreateFromConfigWithInvalidStorageMethod()
     {
@@ -88,14 +88,14 @@ class ReplicationTest extends TestCase
                 ]
             ],
             'storage' => [
-                'class' => \Phlib\DbHelper\Tests\Replication\StorageMock::class,
+                'class' => StorageMock::class,
                 'args'  => [[]]
             ],
         ];
     }
 
     /**
-     * @expectedException \Phlib\DbHelper\Exception\InvalidArgumentException
+     * @expectedException \Phlib\DbHelperReplication\Exception\InvalidArgumentException
      */
     public function testConstructDoesNotAllowEmptySlaves()
     {
@@ -110,7 +110,7 @@ class ReplicationTest extends TestCase
     }
 
     /**
-     * @expectedException \Phlib\DbHelper\Exception\InvalidArgumentException
+     * @expectedException \Phlib\DbHelperReplication\Exception\InvalidArgumentException
      */
     public function testConstructChecksSlaves()
     {
@@ -214,7 +214,7 @@ class ReplicationTest extends TestCase
 
     /**
      * @param array $data
-     * @expectedException \Phlib\DbHelper\Exception\RuntimeException
+     * @expectedException \Phlib\DbHelperReplication\Exception\RuntimeException
      * @dataProvider fetchStatusErrorsWithBadReturnedDataDataProvider
      */
     public function testFetchStatusErrorsWithBadReturnedData($data)
@@ -246,7 +246,7 @@ class ReplicationTest extends TestCase
         $this->storage->method('getSecondsBehind')
             ->willReturn(0);
 
-        $usleep = $this->getFunctionMock('\Phlib\DbHelper', 'usleep');
+        $usleep = $this->getFunctionMock(__NAMESPACE__, 'usleep');
         $usleep->expects(static::once())
             ->with(0);
 
@@ -259,7 +259,7 @@ class ReplicationTest extends TestCase
         $this->storage->method('getSecondsBehind')
             ->willReturn(500);
 
-        $usleep = $this->getFunctionMock('\Phlib\DbHelper', 'usleep');
+        $usleep = $this->getFunctionMock(__NAMESPACE__, 'usleep');
         $usleep->expects(static::once())
             ->with(static::greaterThan(0));
 

@@ -1,15 +1,15 @@
 <?php
 
-namespace Phlib\DbHelper\Console;
+namespace Phlib\DbHelperReplication\Console;
 
-use Phlib\DbHelper\Replication;
+use Phlib\DbHelperReplication\Replication;
 use Phlib\ConsoleProcess\Command\DaemonCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Output\StreamOutput;
 
 /**
- * @package Phlib\DbHelper
+ * @package Phlib\DbHelperReplication
  * @licence LGPL-3.0
  */
 class ReplicationMonitorCommand extends DaemonCommand

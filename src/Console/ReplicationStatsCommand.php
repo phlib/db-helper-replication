@@ -1,14 +1,14 @@
 <?php
 
-namespace Phlib\DbHelper\Console;
+namespace Phlib\DbHelperReplication\Console;
 
-use Phlib\DbHelper\Replication;
+use Phlib\DbHelperReplication\Replication;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
- * @package Phlib\DbHelper
+ * @package Phlib\DbHelperReplication
  * @licence LGPL-3.0
  */
 class ReplicationStatsCommand extends Command

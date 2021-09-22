@@ -1,14 +1,14 @@
 <?php
 
-namespace Phlib\DbHelper;
+namespace Phlib\DbHelperReplication;
 
-use Phlib\DbHelper\Exception\RuntimeException;
-use Phlib\DbHelper\Exception\InvalidArgumentException;
+use Phlib\DbHelperReplication\Exception\RuntimeException;
+use Phlib\DbHelperReplication\Exception\InvalidArgumentException;
 use Phlib\Db\Adapter;
 use Phlib\Db\AdapterInterface;
 
 /**
- * @package Phlib\DbHelper
+ * @package Phlib\DbHelperReplication
  * @licence LGPL-3.0
  */
 class Replication

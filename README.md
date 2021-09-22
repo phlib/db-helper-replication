@@ -61,7 +61,7 @@ $config = [
         ]
     ],
     'storage' => [
-        'class' => \Phlib\DbHelper\Replication\Memcache::class,
+        'class' => \Phlib\DbHelperReplication\Replication\Memcache::class,
         'args'  => [[]]
     ],
 ];

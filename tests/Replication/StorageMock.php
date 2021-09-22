@@ -1,11 +1,9 @@
 <?php
 
-namespace Phlib\DbHelper\Tests\Replication;
-
-use Phlib\DbHelper\Replication\StorageInterface;
+namespace Phlib\DbHelperReplication\Replication;
 
 /**
- * @package Phlib\DbHelper
+ * @package Phlib\DbHelperReplication
  * @licence LGPL-3.0
  */
 class StorageMock implements StorageInterface

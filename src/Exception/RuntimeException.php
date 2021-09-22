@@ -1,9 +1,9 @@
 <?php
 
-namespace Phlib\DbHelper\Exception;
+namespace Phlib\DbHelperReplication\Exception;
 
 /**
- * @package Phlib\DbHelper
+ * @package Phlib\DbHelperReplication
  * @licence LGPL-3.0
  */
 class RuntimeException extends \PDOException implements Exception

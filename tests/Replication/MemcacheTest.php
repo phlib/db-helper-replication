@@ -1,13 +1,11 @@
 <?php
 
-namespace Phlib\DbHelper\Tests\Replication;
+namespace Phlib\DbHelperReplication\Replication;
 
-use Phlib\DbHelper\Replication\Memcache;
-use Phlib\DbHelper\Replication\StorageInterface;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @package Phlib\DbHelper
+ * @package Phlib\DbHelperReplication
  * @licence LGPL-3.0
  */
 class MemcacheTest extends TestCase
@@ -18,7 +16,7 @@ class MemcacheTest extends TestCase
     protected $memcache;
 
     /**
-     * @var \Phlib\DbHelper\Replication\Memcache
+     * @var Memcache
      */
     protected $storage;
 
