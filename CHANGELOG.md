@@ -5,6 +5,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
+### Removed
+- Removed support for PHP versions < v7.1 as they are no longer
+  [actively supported](https://php.net/supported-versions.php) by the PHP project.
 
 ## [0.2.0] - 2021-09-22
 - Change namespace to `Phlib\DbHelperReplication` to avoid conflicts with
