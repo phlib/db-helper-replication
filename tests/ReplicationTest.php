@@ -6,12 +6,13 @@ use Phlib\DbHelper\Replication;
 use Phlib\DbHelper\Replication\StorageInterface;
 use Phlib\Db\AdapterInterface;
 use phpmock\phpunit\PHPMock;
+use PHPUnit\Framework\TestCase;
 
 /**
  * @package Phlib\DbHelper
  * @licence LGPL-3.0
  */
-class ReplicationTest extends \PHPUnit_Framework_TestCase
+class ReplicationTest extends TestCase
 {
     use PHPMock;
 
@@ -28,9 +29,8 @@ class ReplicationTest extends \PHPUnit_Framework_TestCase
     protected function setUp()
     {
         $this->master = $this->createMock(AdapterInterface::class);
-        $this->master->expects($this->any())
-            ->method('getConfig')
-            ->will($this->returnValue(['host' => '127.0.0.1']));
+        $this->master->method('getConfig')
+            ->willReturn(['host' => '127.0.0.1']);
 
         $this->storage = $this->createMock(StorageInterface::class);
 
@@ -48,7 +48,7 @@ class ReplicationTest extends \PHPUnit_Framework_TestCase
     {
         $config = $this->getDefaultConfig();
         $replication = Replication::createFromConfig($config);
-        $this->assertInstanceOf(Replication::class, $replication);
+        static::assertInstanceOf(Replication::class, $replication);
     }
 
     /**
@@ -67,7 +67,7 @@ class ReplicationTest extends \PHPUnit_Framework_TestCase
     public function testCreateFromConfigWithInvalidStorageMethod()
     {
         $config = $this->getDefaultConfig();
-        $config['storage']['class'] = '\stdClass';
+        $config['storage']['class'] = \stdClass::class;
         Replication::createFromConfig($config);
     }
 
@@ -106,7 +106,7 @@ class ReplicationTest extends \PHPUnit_Framework_TestCase
     {
         $slave = $this->createMock(AdapterInterface::class);
         $replication = new Replication($this->master, [$slave], $this->storage);
-        $this->assertSame($this->storage, $replication->getStorage());
+        static::assertSame($this->storage, $replication->getStorage());
     }
 
     /**
@@ -123,7 +123,7 @@ class ReplicationTest extends \PHPUnit_Framework_TestCase
         $weighting = 12345;
         $replication = new Replication($this->master, [$this->createMock(AdapterInterface::class)], $this->storage);
         $replication->setWeighting($weighting);
-        $this->assertEquals($weighting, $replication->getWeighting());
+        static::assertEquals($weighting, $replication->getWeighting());
     }
 
     public function testSetMaximumSleep()
@@ -131,7 +131,7 @@ class ReplicationTest extends \PHPUnit_Framework_TestCase
         $maxSleep = 123456;
         $replication = new Replication($this->master, [$this->createMock(AdapterInterface::class)], $this->storage);
         $replication->setMaximumSleep($maxSleep);
-        $this->assertEquals($maxSleep, $replication->getMaximumSleep());
+        static::assertEquals($maxSleep, $replication->getMaximumSleep());
     }
 
     /**
@@ -140,7 +140,8 @@ class ReplicationTest extends \PHPUnit_Framework_TestCase
      */
     public function testMonitorRecordsToStorage($method)
     {
-        $this->storage->expects($this->once())->method($method);
+        $this->storage->expects(static::once())
+            ->method($method);
         $slave = $this->createMock(AdapterInterface::class);
         $this->setupSlave($slave, ['Seconds_Behind_Master' => 20]);
         $replication = new Replication($this->master, [$slave], $this->storage);
@@ -163,13 +164,12 @@ class ReplicationTest extends \PHPUnit_Framework_TestCase
         $slave   = $this->createMock(AdapterInterface::class);
         $this->setupSlave($slave, ['Seconds_Behind_Master' => 5]);
 
-        $this->storage->expects($this->any())
-            ->method('getHistory')
-            ->will($this->returnValue($history));
+        $this->storage->method('getHistory')
+            ->willReturn($history);
 
-        $this->storage->expects($this->once())
+        $this->storage->expects(static::once())
             ->method('setHistory')
-            ->with($this->anything(), $this->countOf($maxEntries));
+            ->with(static::anything(), static::countOf($maxEntries));
 
         $replication = new Replication($this->master, [$slave], $this->storage);
         $replication->monitor();
@@ -184,13 +184,12 @@ class ReplicationTest extends \PHPUnit_Framework_TestCase
         $slave   = $this->createMock(AdapterInterface::class);
         $this->setupSlave($slave, ['Seconds_Behind_Master' => $newValue]);
 
-        $this->storage->expects($this->any())
-            ->method('getHistory')
-            ->will($this->returnValue($history));
+        $this->storage->method('getHistory')
+            ->willReturn($history);
 
-        $this->storage->expects($this->once())
+        $this->storage->expects(static::once())
             ->method('setHistory')
-            ->with($this->anything(), $this->contains($newValue));
+            ->with(static::anything(), static::contains($newValue));
 
         $replication = new Replication($this->master, [$slave], $this->storage);
         $replication->monitor();
@@ -199,16 +198,15 @@ class ReplicationTest extends \PHPUnit_Framework_TestCase
     public function testFetchStatusMakesCorrectCall()
     {
         $pdoStatement = $this->createMock(\PDOStatement::class);
-        $pdoStatement->expects($this->any())
-            ->method('fetch')
-            ->will($this->returnValue(['Seconds_Behind_Master' => 10]));
+        $pdoStatement->method('fetch')
+            ->willReturn(['Seconds_Behind_Master' => 10]);
 
         /** @var AdapterInterface|\PHPUnit_Framework_MockObject_MockObject $slave */
         $slave = $this->createMock(AdapterInterface::class);
-        $slave->expects($this->once())
+        $slave->expects(static::once())
             ->method('query')
-            ->with($this->equalTo('SHOW SLAVE STATUS'))
-            ->will($this->returnValue($pdoStatement));
+            ->with('SHOW SLAVE STATUS')
+            ->willReturn($pdoStatement);
 
         $replication = new Replication($this->master, [$slave], $this->storage);
         $replication->fetchStatus($slave);
@@ -222,15 +220,13 @@ class ReplicationTest extends \PHPUnit_Framework_TestCase
     public function testFetchStatusErrorsWithBadReturnedData($data)
     {
         $pdoStatement = $this->createMock(\PDOStatement::class);
-        $pdoStatement->expects($this->any())
-            ->method('fetch')
-            ->will($this->returnValue($data));
+        $pdoStatement->method('fetch')
+            ->willReturn($data);
 
         /** @var AdapterInterface|\PHPUnit_Framework_MockObject_MockObject $slave */
         $slave = $this->createMock(AdapterInterface::class);
-        $slave->expects($this->any())
-            ->method('query')
-            ->will($this->returnValue($pdoStatement));
+        $slave->method('query')
+            ->willReturn($pdoStatement);
 
         $replication = new Replication($this->master, [$slave], $this->storage);
         $replication->fetchStatus($slave);
@@ -247,13 +243,12 @@ class ReplicationTest extends \PHPUnit_Framework_TestCase
 
     public function testThrottleWithNoSlaveLag()
     {
-        $this->storage->expects($this->any())
-            ->method('getSecondsBehind')
-            ->will($this->returnValue(0));
+        $this->storage->method('getSecondsBehind')
+            ->willReturn(0);
 
         $usleep = $this->getFunctionMock('\Phlib\DbHelper', 'usleep');
-        $usleep->expects($this->once())
-            ->with($this->equalTo(0));
+        $usleep->expects(static::once())
+            ->with(0);
 
         $slave = $this->createMock(AdapterInterface::class);
         (new Replication($this->master, [$slave], $this->storage))->throttle();
@@ -261,13 +256,12 @@ class ReplicationTest extends \PHPUnit_Framework_TestCase
 
     public function testThrottleWithSlaveLag()
     {
-        $this->storage->expects($this->any())
-            ->method('getSecondsBehind')
-            ->will($this->returnValue(500));
+        $this->storage->method('getSecondsBehind')
+            ->willReturn(500);
 
         $usleep = $this->getFunctionMock('\Phlib\DbHelper', 'usleep');
-        $usleep->expects($this->once())
-            ->with($this->greaterThan(0));
+        $usleep->expects(static::once())
+            ->with(static::greaterThan(0));
 
         $slave = $this->createMock(AdapterInterface::class);
         (new Replication($this->master, [$slave], $this->storage))->throttle();
@@ -280,12 +274,10 @@ class ReplicationTest extends \PHPUnit_Framework_TestCase
     protected function setupSlave(\PHPUnit_Framework_MockObject_MockObject $slave, $return)
     {
         $pdoStatement = $this->createMock(\PDOStatement::class);
-        $pdoStatement->expects($this->any())
-            ->method('fetch')
-            ->will($this->returnValue($return));
+        $pdoStatement->method('fetch')
+            ->willReturn($return);
 
-        $slave->expects($this->any())
-            ->method('query')
-            ->will($this->returnValue($pdoStatement));
+        $slave->method('query')
+            ->willReturn($pdoStatement);
     }
 }
