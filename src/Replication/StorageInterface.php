@@ -3,8 +3,8 @@
 namespace Phlib\DbHelper\Replication;
 
 /**
- * Interface StorageInterface
- * @package Phlib\Db\Replication
+ * @package Phlib\DbHelper
+ * @licence LGPL-3.0
  */
 interface StorageInterface
 {

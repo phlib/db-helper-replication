@@ -3,7 +3,8 @@
 namespace Phlib\DbHelper\Replication;
 
 /**
- * Class Memcache
+ * @package Phlib\DbHelper
+ * @licence LGPL-3.0
  */
 class Memcache implements StorageInterface
 {
