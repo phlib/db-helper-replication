@@ -5,4 +5,6 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
+
+## [0.1.0] - 2021-09-22
 - Add *Replication* helper from `phlib/db`.
