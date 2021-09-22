@@ -15,25 +15,27 @@ interface StorageInterface
     public static function createFromConfig(array $config);
 
     /**
-     * @return integer
+     * @param string $host
+     * @return int
      */
     public function getSecondsBehind($host);
 
     /**
      * @param string $host
-     * @param integer $value
+     * @param int $value
      * @return $this
      */
     public function setSecondsBehind($host, $value);
 
     /**
-     * @return integer[]
+     * @param string $host
+     * @return int[]
      */
     public function getHistory($host);
 
     /**
      * @param string $host
-     * @param integer[] $values
+     * @param int[] $values
      * @return $this
      */
     public function setHistory($host, array $values);
