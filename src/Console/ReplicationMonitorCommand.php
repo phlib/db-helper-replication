@@ -2,8 +2,8 @@
 
 namespace Phlib\DbHelperReplication\Console;
 
-use Phlib\DbHelperReplication\Replication;
 use Phlib\ConsoleProcess\Command\DaemonCommand;
+use Phlib\DbHelperReplication\Replication;
 use Phlib\DbHelperReplication\ReplicationFactory;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;

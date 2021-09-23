@@ -2,8 +2,8 @@
 
 namespace Phlib\DbHelperReplication;
 
-use Phlib\DbHelperReplication\Replication\StorageInterface;
 use Phlib\Db\AdapterInterface;
+use Phlib\DbHelperReplication\Replication\StorageInterface;
 use phpmock\phpunit\PHPMock;
 use PHPUnit\Framework\TestCase;
 
@@ -31,7 +31,9 @@ class ReplicationTest extends TestCase
     {
         $this->primary = $this->createMock(AdapterInterface::class);
         $this->primary->method('getConfig')
-            ->willReturn(['host' => '127.0.0.1']);
+            ->willReturn([
+                'host' => '127.0.0.1',
+            ]);
 
         $this->storage = $this->createMock(StorageInterface::class);
 
@@ -42,7 +44,7 @@ class ReplicationTest extends TestCase
     {
         parent::tearDown();
         $this->storage = null;
-        $this->primary  = null;
+        $this->primary = null;
     }
 
     /**
@@ -94,7 +96,9 @@ class ReplicationTest extends TestCase
         $this->storage->expects(static::once())
             ->method($method);
         $replica = $this->createMock(AdapterInterface::class);
-        $this->setupReplica($replica, [self::REPLICA_LAG_KEY => 20]);
+        $this->setupReplica($replica, [
+            self::REPLICA_LAG_KEY => 20,
+        ]);
         $replication = new Replication($this->primary, [$replica], $this->storage);
         $replication->monitor();
     }
@@ -103,7 +107,7 @@ class ReplicationTest extends TestCase
     {
         return [
             ['setSecondsBehind'],
-            ['setHistory']
+            ['setHistory'],
         ];
     }
 
@@ -113,7 +117,9 @@ class ReplicationTest extends TestCase
 
         $history = array_pad([], $maxEntries, 20);
         $replica = $this->createMock(AdapterInterface::class);
-        $this->setupReplica($replica, [self::REPLICA_LAG_KEY => 5]);
+        $this->setupReplica($replica, [
+            self::REPLICA_LAG_KEY => 5,
+        ]);
 
         $this->storage->method('getHistory')
             ->willReturn($history);
@@ -129,11 +135,13 @@ class ReplicationTest extends TestCase
     public function testHistoryGetsNewReplicaValue()
     {
         $maxEntries = Replication::MAX_HISTORY;
-        $newValue   = 5;
+        $newValue = 5;
 
         $history = array_pad([], $maxEntries / 2, 20);
         $replica = $this->createMock(AdapterInterface::class);
-        $this->setupReplica($replica, [self::REPLICA_LAG_KEY => $newValue]);
+        $this->setupReplica($replica, [
+            self::REPLICA_LAG_KEY => $newValue,
+        ]);
 
         $this->storage->method('getHistory')
             ->willReturn($history);
@@ -150,7 +158,9 @@ class ReplicationTest extends TestCase
     {
         $pdoStatement = $this->createMock(\PDOStatement::class);
         $pdoStatement->method('fetch')
-            ->willReturn([self::REPLICA_LAG_KEY => 10]);
+            ->willReturn([
+                self::REPLICA_LAG_KEY => 10,
+            ]);
 
         /** @var AdapterInterface|\PHPUnit_Framework_MockObject_MockObject $replica */
         $replica = $this->createMock(AdapterInterface::class);
@@ -187,8 +197,12 @@ class ReplicationTest extends TestCase
     {
         return [
             [false],
-            [['FooColumn' => 'bar']],
-            [[self::REPLICA_LAG_KEY => null]]
+            [[
+                'FooColumn' => 'bar',
+            ]],
+            [[
+                self::REPLICA_LAG_KEY => null,
+            ]],
         ];
     }
 

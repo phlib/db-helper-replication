@@ -13,7 +13,7 @@ class StorageMock implements StorageInterface
      */
     public static function createFromConfig(array $config)
     {
-        return new static;
+        return new static();
     }
 
     /**

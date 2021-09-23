@@ -57,12 +57,12 @@ $config = [
         [
             'host'     => '10.0.0.2',
             'username' => 'foo',
-            'password' => 'bar'
-        ]
+            'password' => 'bar',
+        ],
     ],
     'storage' => [
         'class' => \Phlib\DbHelperReplication\Replication\Memcache::class,
-        'args'  => [[]]
+        'args'  => [[]],
     ],
 ];
 

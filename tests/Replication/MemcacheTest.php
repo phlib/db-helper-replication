@@ -29,14 +29,14 @@ class MemcacheTest extends TestCase
         }
 
         $this->memcache = $this->createMock(\Memcached::class);
-        $this->storage  = new Memcache($this->memcache);
+        $this->storage = new Memcache($this->memcache);
         parent::setUp();
     }
 
     public function tearDown()
     {
         parent::tearDown();
-        $this->storage  = null;
+        $this->storage = null;
         $this->memcache = null;
     }
 

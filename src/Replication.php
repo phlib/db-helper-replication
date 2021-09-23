@@ -2,9 +2,9 @@
 
 namespace Phlib\DbHelperReplication;
 
-use Phlib\DbHelperReplication\Exception\RuntimeException;
-use Phlib\DbHelperReplication\Exception\InvalidArgumentException;
 use Phlib\Db\AdapterInterface;
+use Phlib\DbHelperReplication\Exception\InvalidArgumentException;
+use Phlib\DbHelperReplication\Exception\RuntimeException;
 
 /**
  * @package Phlib\DbHelperReplication
@@ -27,7 +27,7 @@ class Replication
     protected $replicas;
 
     /**
-     * @var Replication\StorageInterface $storage
+     * @var Replication\StorageInterface
      */
     protected $storage;
 
@@ -65,9 +65,9 @@ class Replication
      */
     public function __construct(AdapterInterface $primary, array $replicas, Replication\StorageInterface $storage)
     {
-        $this->primary  = $primary;
+        $this->primary = $primary;
         $this->replicas = $replicas;
-        $this->host    = $primary->getConfig()['host'];
+        $this->host = $primary->getConfig()['host'];
         $this->storage = $storage;
 
         if (empty($replicas)) {
@@ -139,12 +139,12 @@ class Replication
     {
         $maxBehind = 0;
         foreach ($this->replicas as $replica) {
-            $status    = $this->fetchStatus($replica);
+            $status = $this->fetchStatus($replica);
             $maxBehind = max($status[self::REPLICA_LAG_KEY], $maxBehind);
         }
 
         // append data point to the history for this host
-        $history   = $this->storage->getHistory($this->host);
+        $history = $this->storage->getHistory($this->host);
         $history[] = $maxBehind;
         if (count($history) > self::MAX_HISTORY) {
             // trim the history
@@ -152,7 +152,7 @@ class Replication
         }
 
         // calculate the average
-        $avgBehind     = 0;
+        $avgBehind = 0;
         $historyLength = count($history);
         if ($historyLength > 0) {
             $avgBehind = ceil(array_sum($history) / $historyLength);
@@ -175,7 +175,7 @@ class Replication
         if (
             !is_array($status) ||
             !array_key_exists(self::REPLICA_LAG_KEY, $status) ||
-            is_null($status[self::REPLICA_LAG_KEY])
+            $status[self::REPLICA_LAG_KEY] === null
         ) {
             throw new RuntimeException(self::REPLICA_LAG_KEY . ' is not a valid value');
         }
@@ -194,7 +194,7 @@ class Replication
     {
         $currentInterval = time() - $this->loadUpdated;
         if ($currentInterval > $this->updateInterval) {
-            $this->loadValue   = (int)$this->storage->getSecondsBehind($this->host);
+            $this->loadValue = (int)$this->storage->getSecondsBehind($this->host);
             $this->loadUpdated = time();
         }
         $this->sleep();
@@ -210,8 +210,8 @@ class Replication
     protected function sleep()
     {
         $alteredLoad = pow($this->loadValue, 5.2) / 100;
-        $weighting   = $this->weighting / 100;
-        $sleepMs     = min($alteredLoad * $weighting, $this->maxSleep);
+        $weighting = $this->weighting / 100;
+        $sleepMs = min($alteredLoad * $weighting, $this->maxSleep);
 
         usleep(floor($sleepMs * 1000));
 

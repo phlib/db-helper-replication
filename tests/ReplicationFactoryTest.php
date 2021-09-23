@@ -47,19 +47,19 @@ class ReplicationFactoryTest extends TestCase
     public function getDefaultConfig()
     {
         return [
-            'host'     => '10.0.0.1',
+            'host' => '10.0.0.1',
             'username' => 'foo',
             'password' => 'bar',
             'replicas' => [
                 [
-                    'host'     => '10.0.0.2',
+                    'host' => '10.0.0.2',
                     'username' => 'foo',
-                    'password' => 'bar'
-                ]
+                    'password' => 'bar',
+                ],
             ],
             'storage' => [
                 'class' => StorageMock::class,
-                'args'  => [[]]
+                'args' => [[]],
             ],
         ];
     }
