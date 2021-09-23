@@ -2,6 +2,7 @@
 
 namespace Phlib\DbHelperReplication\Replication;
 
+use Phlib\DbHelperReplication\Exception\RuntimeException;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -13,12 +14,12 @@ class MemcacheTest extends TestCase
     /**
      * @var \Memcached|\PHPUnit_Framework_MockObject_MockObject
      */
-    protected $memcache;
+    private $memcache;
 
     /**
      * @var Memcache
      */
-    protected $storage;
+    private $storage;
 
     public function setUp()
     {
@@ -44,90 +45,93 @@ class MemcacheTest extends TestCase
         static::assertInstanceOf(StorageInterface::class, $this->storage);
     }
 
-    public function testGetKeyContainsHost()
+    public function testGetSecondsBehind()
     {
-        $host = '127.0.0.1';
-        static::assertContains($host, $this->storage->getKey($host));
-    }
+        $host = sha1(uniqid());
+        $expectedKey = "DbReplication:{$host}:SecondsBehind";
+        $seconds = rand();
 
-    public function testGetKeyIsNamespaced()
-    {
-        $host = '127.0.0.1';
-        static::assertNotEquals($host, $this->storage->getKey($host));
-    }
-
-    public function testGetSecondsBehindReturnsValue()
-    {
-        $seconds = 123;
-        $this->memcache->method('get')
+        $this->memcache->expects(static::once())
+            ->method('get')
+            ->with($expectedKey)
             ->willReturn($seconds);
 
-        static::assertEquals($seconds, $this->storage->getSecondsBehind('test-host'));
+        $actual = $this->storage->getSecondsBehind($host);
+        static::assertEquals($seconds, $actual);
     }
 
-    public function testGetSecondsBehindRequestUsingHost()
+    public function testSetSecondsBehind()
     {
-        $host = 'test-host';
-        $this->memcache->expects(static::once())
-            ->method('get')
-            ->with(static::stringContains($host));
+        $host = sha1(uniqid());
+        $expectedKey = "DbReplication:{$host}:SecondsBehind";
+        $seconds = rand();
 
-        $this->storage->getSecondsBehind($host);
-    }
-
-    public function testSetSecondsBehindReceivesValue()
-    {
-        $seconds = 123;
         $this->memcache->expects(static::once())
             ->method('set')
-            ->with(static::anything(), $seconds);
+            ->with($expectedKey, $seconds)
+            ->willReturn(true);
 
-        $this->storage->setSecondsBehind('test-host', $seconds);
+        $this->storage->setSecondsBehind($host, $seconds);
     }
 
-    public function testSetSecondsBehindRequestUsingHost()
+    public function testSetSecondsBehindFailure()
     {
-        $host = 'test-host';
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('Unable to store value');
+
+        $host = sha1(uniqid());
+        $seconds = rand();
+
         $this->memcache->expects(static::once())
             ->method('set')
-            ->with(static::stringContains($host));
+            ->willReturn(false);
 
-        $this->storage->setSecondsBehind($host, 123);
+        $this->storage->setSecondsBehind($host, $seconds);
     }
 
-    public function testGetHistoryReturnsArray()
+    public function testGetHistory()
     {
-        $history = [123, 123, 123, 23, 23, 3];
+        $host = sha1(uniqid());
+        $expectedKey = "DbReplication:{$host}:History";
+        $history = [rand(), rand(), rand(), rand(), rand(), rand()];
         $serialized = serialize($history);
-        $this->memcache->method('get')
-            ->willReturn($serialized);
-        static::assertEquals($history, $this->storage->getHistory('test-host'));
-    }
 
-    public function testGetHistoryUsesHost()
-    {
-        $host = 'test-host';
         $this->memcache->expects(static::once())
             ->method('get')
-            ->with(static::stringContains($host));
-        $this->storage->getHistory($host);
+            ->with($expectedKey)
+            ->willReturn($serialized);
+
+        $actual = $this->storage->getHistory($host);
+        static::assertEquals($history, $actual);
     }
 
-    public function testSetHistorySetsString()
+    public function testSetHistory()
     {
+        $host = sha1(uniqid());
+        $expectedKey = "DbReplication:{$host}:History";
+        $history = [rand(), rand(), rand(), rand(), rand(), rand()];
+        $serialized = serialize($history);
+
         $this->memcache->expects(static::once())
             ->method('set')
-            ->with(static::anything(), static::isType('string'));
-        $history = [123, 123, 123, 23, 23, 3];
-        $this->storage->setHistory('test-host', $history);
+            ->with($expectedKey, $serialized)
+            ->willReturn(true);
+
+        $this->storage->setHistory($host, $history);
     }
 
-    public function testSetHistoryUsesHost()
+    public function testSetHistoryFailure()
     {
-        $host = 'test-host';
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('Unable to store value');
+
+        $host = sha1(uniqid());
+        $history = [rand()];
+
         $this->memcache->expects(static::once())
             ->method('set')
-            ->with(static::stringContains($host));
-        $this->storage->setHistory($host, [123, 123, 123, 23, 23, 3]);
+            ->willReturn(false);
+
+        $this->storage->setHistory($host, $history);
     }
 }

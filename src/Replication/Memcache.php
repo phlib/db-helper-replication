@@ -51,7 +51,7 @@ class Memcache implements StorageInterface
      * @param string $host
      * @return string
      */
-    public function getKey($host)
+    private function getKey($host)
     {
         return "DbReplication:$host";
     }
