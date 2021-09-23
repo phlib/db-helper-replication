@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
+### Changed
+- Use `ext-memcached` in place of `ext-memcache`.
 ### Removed
 - Removed support for PHP versions < v7.1 as they are no longer
   [actively supported](https://php.net/supported-versions.php) by the PHP project.

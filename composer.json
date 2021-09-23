@@ -20,7 +20,7 @@
         "phlib/console-process": "^0.7"
     },
     "suggest": {
-        "ext-memcache": "Use to cache lag values"
+        "ext-memcached": "Use to cache lag values"
     },
     "autoload": {
         "psr-4": {

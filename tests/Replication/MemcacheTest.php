@@ -11,7 +11,7 @@ use PHPUnit\Framework\TestCase;
 class MemcacheTest extends TestCase
 {
     /**
-     * @var \Memcache|\PHPUnit_Framework_MockObject_MockObject
+     * @var \Memcached|\PHPUnit_Framework_MockObject_MockObject
      */
     protected $memcache;
 
@@ -22,12 +22,12 @@ class MemcacheTest extends TestCase
 
     public function setUp()
     {
-        if (!extension_loaded('Memcache')) {
+        if (!extension_loaded('Memcached')) {
             static::markTestSkipped();
             return;
         }
 
-        $this->memcache = $this->createMock(\Memcache::class);
+        $this->memcache = $this->createMock(\Memcached::class);
         $this->storage  = new Memcache($this->memcache);
         parent::setUp();
     }
