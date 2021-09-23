@@ -15,10 +15,12 @@ class ReplicationTest extends TestCase
 {
     use PHPMock;
 
+    private const REPLICA_LAG_KEY = 'Seconds_Behind_Master';
+
     /**
      * @var AdapterInterface|\PHPUnit_Framework_MockObject_MockObject
      */
-    protected $master;
+    protected $primary;
 
     /**
      * @var StorageInterface|\PHPUnit_Framework_MockObject_MockObject
@@ -27,8 +29,8 @@ class ReplicationTest extends TestCase
 
     protected function setUp()
     {
-        $this->master = $this->createMock(AdapterInterface::class);
-        $this->master->method('getConfig')
+        $this->primary = $this->createMock(AdapterInterface::class);
+        $this->primary->method('getConfig')
             ->willReturn(['host' => '127.0.0.1']);
 
         $this->storage = $this->createMock(StorageInterface::class);
@@ -40,37 +42,37 @@ class ReplicationTest extends TestCase
     {
         parent::tearDown();
         $this->storage = null;
-        $this->master  = null;
+        $this->primary  = null;
     }
 
     /**
      * @expectedException \Phlib\DbHelperReplication\Exception\InvalidArgumentException
      */
-    public function testConstructDoesNotAllowEmptySlaves()
+    public function testConstructDoesNotAllowEmptyReplicas()
     {
-        new Replication($this->master, [], $this->storage);
+        new Replication($this->primary, [], $this->storage);
     }
 
     public function testGettingStorageReturnsSameInstance()
     {
-        $slave = $this->createMock(AdapterInterface::class);
-        $replication = new Replication($this->master, [$slave], $this->storage);
+        $replica = $this->createMock(AdapterInterface::class);
+        $replication = new Replication($this->primary, [$replica], $this->storage);
         static::assertSame($this->storage, $replication->getStorage());
     }
 
     /**
      * @expectedException \Phlib\DbHelperReplication\Exception\InvalidArgumentException
      */
-    public function testConstructChecksSlaves()
+    public function testConstructChecksReplicas()
     {
-        $slaves = [new \stdClass()];
-        new Replication($this->master, $slaves, $this->storage);
+        $replicas = [new \stdClass()];
+        new Replication($this->primary, $replicas, $this->storage);
     }
 
     public function testSetWeighting()
     {
         $weighting = 12345;
-        $replication = new Replication($this->master, [$this->createMock(AdapterInterface::class)], $this->storage);
+        $replication = new Replication($this->primary, [$this->createMock(AdapterInterface::class)], $this->storage);
         $replication->setWeighting($weighting);
         static::assertEquals($weighting, $replication->getWeighting());
     }
@@ -78,7 +80,7 @@ class ReplicationTest extends TestCase
     public function testSetMaximumSleep()
     {
         $maxSleep = 123456;
-        $replication = new Replication($this->master, [$this->createMock(AdapterInterface::class)], $this->storage);
+        $replication = new Replication($this->primary, [$this->createMock(AdapterInterface::class)], $this->storage);
         $replication->setMaximumSleep($maxSleep);
         static::assertEquals($maxSleep, $replication->getMaximumSleep());
     }
@@ -91,9 +93,9 @@ class ReplicationTest extends TestCase
     {
         $this->storage->expects(static::once())
             ->method($method);
-        $slave = $this->createMock(AdapterInterface::class);
-        $this->setupSlave($slave, ['Seconds_Behind_Master' => 20]);
-        $replication = new Replication($this->master, [$slave], $this->storage);
+        $replica = $this->createMock(AdapterInterface::class);
+        $this->setupReplica($replica, [self::REPLICA_LAG_KEY => 20]);
+        $replication = new Replication($this->primary, [$replica], $this->storage);
         $replication->monitor();
     }
 
@@ -110,8 +112,8 @@ class ReplicationTest extends TestCase
         $maxEntries = Replication::MAX_HISTORY;
 
         $history = array_pad([], $maxEntries, 20);
-        $slave   = $this->createMock(AdapterInterface::class);
-        $this->setupSlave($slave, ['Seconds_Behind_Master' => 5]);
+        $replica = $this->createMock(AdapterInterface::class);
+        $this->setupReplica($replica, [self::REPLICA_LAG_KEY => 5]);
 
         $this->storage->method('getHistory')
             ->willReturn($history);
@@ -120,18 +122,18 @@ class ReplicationTest extends TestCase
             ->method('setHistory')
             ->with(static::anything(), static::countOf($maxEntries));
 
-        $replication = new Replication($this->master, [$slave], $this->storage);
+        $replication = new Replication($this->primary, [$replica], $this->storage);
         $replication->monitor();
     }
 
-    public function testHistoryGetsNewSlaveValue()
+    public function testHistoryGetsNewReplicaValue()
     {
         $maxEntries = Replication::MAX_HISTORY;
         $newValue   = 5;
 
         $history = array_pad([], $maxEntries / 2, 20);
-        $slave   = $this->createMock(AdapterInterface::class);
-        $this->setupSlave($slave, ['Seconds_Behind_Master' => $newValue]);
+        $replica = $this->createMock(AdapterInterface::class);
+        $this->setupReplica($replica, [self::REPLICA_LAG_KEY => $newValue]);
 
         $this->storage->method('getHistory')
             ->willReturn($history);
@@ -140,7 +142,7 @@ class ReplicationTest extends TestCase
             ->method('setHistory')
             ->with(static::anything(), static::contains($newValue));
 
-        $replication = new Replication($this->master, [$slave], $this->storage);
+        $replication = new Replication($this->primary, [$replica], $this->storage);
         $replication->monitor();
     }
 
@@ -148,17 +150,17 @@ class ReplicationTest extends TestCase
     {
         $pdoStatement = $this->createMock(\PDOStatement::class);
         $pdoStatement->method('fetch')
-            ->willReturn(['Seconds_Behind_Master' => 10]);
+            ->willReturn([self::REPLICA_LAG_KEY => 10]);
 
-        /** @var AdapterInterface|\PHPUnit_Framework_MockObject_MockObject $slave */
-        $slave = $this->createMock(AdapterInterface::class);
-        $slave->expects(static::once())
+        /** @var AdapterInterface|\PHPUnit_Framework_MockObject_MockObject $replica */
+        $replica = $this->createMock(AdapterInterface::class);
+        $replica->expects(static::once())
             ->method('query')
             ->with('SHOW SLAVE STATUS')
             ->willReturn($pdoStatement);
 
-        $replication = new Replication($this->master, [$slave], $this->storage);
-        $replication->fetchStatus($slave);
+        $replication = new Replication($this->primary, [$replica], $this->storage);
+        $replication->fetchStatus($replica);
     }
 
     /**
@@ -172,13 +174,13 @@ class ReplicationTest extends TestCase
         $pdoStatement->method('fetch')
             ->willReturn($data);
 
-        /** @var AdapterInterface|\PHPUnit_Framework_MockObject_MockObject $slave */
-        $slave = $this->createMock(AdapterInterface::class);
-        $slave->method('query')
+        /** @var AdapterInterface|\PHPUnit_Framework_MockObject_MockObject $replica */
+        $replica = $this->createMock(AdapterInterface::class);
+        $replica->method('query')
             ->willReturn($pdoStatement);
 
-        $replication = new Replication($this->master, [$slave], $this->storage);
-        $replication->fetchStatus($slave);
+        $replication = new Replication($this->primary, [$replica], $this->storage);
+        $replication->fetchStatus($replica);
     }
 
     public function fetchStatusErrorsWithBadReturnedDataDataProvider()
@@ -186,11 +188,11 @@ class ReplicationTest extends TestCase
         return [
             [false],
             [['FooColumn' => 'bar']],
-            [['Seconds_Behind_Master' => null]]
+            [[self::REPLICA_LAG_KEY => null]]
         ];
     }
 
-    public function testThrottleWithNoSlaveLag()
+    public function testThrottleWithNoReplicaLag()
     {
         $this->storage->method('getSecondsBehind')
             ->willReturn(0);
@@ -199,11 +201,11 @@ class ReplicationTest extends TestCase
         $usleep->expects(static::once())
             ->with(0);
 
-        $slave = $this->createMock(AdapterInterface::class);
-        (new Replication($this->master, [$slave], $this->storage))->throttle();
+        $replica = $this->createMock(AdapterInterface::class);
+        (new Replication($this->primary, [$replica], $this->storage))->throttle();
     }
 
-    public function testThrottleWithSlaveLag()
+    public function testThrottleWithReplicaLag()
     {
         $this->storage->method('getSecondsBehind')
             ->willReturn(500);
@@ -212,21 +214,21 @@ class ReplicationTest extends TestCase
         $usleep->expects(static::once())
             ->with(static::greaterThan(0));
 
-        $slave = $this->createMock(AdapterInterface::class);
-        (new Replication($this->master, [$slave], $this->storage))->throttle();
+        $replica = $this->createMock(AdapterInterface::class);
+        (new Replication($this->primary, [$replica], $this->storage))->throttle();
     }
 
     /**
-     * @param AdapterInterface|\PHPUnit_Framework_MockObject_MockObject $slave
+     * @param AdapterInterface|\PHPUnit_Framework_MockObject_MockObject $replica
      * @param mixed $return
      */
-    protected function setupSlave(\PHPUnit_Framework_MockObject_MockObject $slave, $return)
+    protected function setupReplica(\PHPUnit_Framework_MockObject_MockObject $replica, $return)
     {
         $pdoStatement = $this->createMock(\PDOStatement::class);
         $pdoStatement->method('fetch')
             ->willReturn($return);
 
-        $slave->method('query')
+        $replica->method('query')
             ->willReturn($pdoStatement);
     }
 }

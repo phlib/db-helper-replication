@@ -40,7 +40,7 @@ class ReplicationMonitorCommandTest extends ConsoleTestCase
             'host' => '127.0.0.1',
             'username' => 'root',
             'password' => '',
-            'slaves' => [
+            'replicas' => [
                 [
                     'host' => '127.0.0.1',
                     'username' => 'root',

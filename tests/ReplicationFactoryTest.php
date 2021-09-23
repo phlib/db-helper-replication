@@ -50,7 +50,7 @@ class ReplicationFactoryTest extends TestCase
             'host'     => '10.0.0.1',
             'username' => 'foo',
             'password' => 'bar',
-            'slaves'   => [
+            'replicas' => [
                 [
                     'host'     => '10.0.0.2',
                     'username' => 'foo',

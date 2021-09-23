@@ -14,15 +14,17 @@ class Replication
 {
     const MAX_HISTORY = 30;
 
+    private const REPLICA_LAG_KEY = 'Seconds_Behind_Master';
+
     /**
      * @var AdapterInterface
      */
-    protected $master;
+    protected $primary;
 
     /**
      * @var AdapterInterface[]
      */
-    protected $slaves;
+    protected $replicas;
 
     /**
      * @var Replication\StorageInterface $storage
@@ -57,23 +59,23 @@ class Replication
     /**
      * Constructor
      *
-     * @param AdapterInterface $master
-     * @param AdapterInterface[] $slaves
+     * @param AdapterInterface $primary
+     * @param AdapterInterface[] $replicas
      * @param Replication\StorageInterface $storage
      */
-    public function __construct(AdapterInterface $master, array $slaves, Replication\StorageInterface $storage)
+    public function __construct(AdapterInterface $primary, array $replicas, Replication\StorageInterface $storage)
     {
-        $this->master  = $master;
-        $this->slaves  = $slaves;
-        $this->host    = $master->getConfig()['host'];
+        $this->primary  = $primary;
+        $this->replicas = $replicas;
+        $this->host    = $primary->getConfig()['host'];
         $this->storage = $storage;
 
-        if (empty($slaves)) {
-            throw new InvalidArgumentException('Missing required list of slaves.');
+        if (empty($replicas)) {
+            throw new InvalidArgumentException('Missing required list of replicas.');
         }
-        foreach ($slaves as $slave) {
-            if (!$slave instanceof AdapterInterface) {
-                throw new InvalidArgumentException('Specified slave is not an expected adapter.');
+        foreach ($replicas as $replica) {
+            if (!$replica instanceof AdapterInterface) {
+                throw new InvalidArgumentException('Specified replica is not an expected adapter.');
             }
         }
     }
@@ -136,9 +138,9 @@ class Replication
     public function monitor()
     {
         $maxBehind = 0;
-        foreach ($this->slaves as $slave) {
-            $status    = $this->fetchStatus($slave);
-            $maxBehind = max($status['Seconds_Behind_Master'], $maxBehind);
+        foreach ($this->replicas as $replica) {
+            $status    = $this->fetchStatus($replica);
+            $maxBehind = max($status[self::REPLICA_LAG_KEY], $maxBehind);
         }
 
         // append data point to the history for this host
@@ -163,19 +165,19 @@ class Replication
     }
 
     /**
-     * @param AdapterInterface $slave
+     * @param AdapterInterface $replica
      * @return array
      */
-    public function fetchStatus(AdapterInterface $slave)
+    public function fetchStatus(AdapterInterface $replica)
     {
-        $status = $slave->query('SHOW SLAVE STATUS')
+        $status = $replica->query('SHOW SLAVE STATUS')
             ->fetch(\PDO::FETCH_ASSOC);
         if (
             !is_array($status) ||
-            !array_key_exists('Seconds_Behind_Master', $status) ||
-            is_null($status['Seconds_Behind_Master'])
+            !array_key_exists(self::REPLICA_LAG_KEY, $status) ||
+            is_null($status[self::REPLICA_LAG_KEY])
         ) {
-            throw new RuntimeException('Seconds_Behind_Master is not a valid value');
+            throw new RuntimeException(self::REPLICA_LAG_KEY . ' is not a valid value');
         }
         return $status;
     }

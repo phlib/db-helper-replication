@@ -17,15 +17,15 @@ class ReplicationFactory
      */
     public function createFromConfig(array $config)
     {
-        $master = new Adapter([
+        $primary = new Adapter([
             'host'     => $config['host'],
             'username' => $config['username'],
             'password' => $config['password']
         ]);
 
-        $slaves = [];
-        foreach ($config['slaves'] as $slave) {
-            $slaves[] = new Adapter($slave);
+        $replicas = [];
+        foreach ($config['replicas'] as $replica) {
+            $replicas[] = new Adapter($replica);
         }
 
         $storageClass = $config['storage']['class'];
@@ -39,6 +39,6 @@ class ReplicationFactory
         }
         $storage = call_user_func_array([$storageClass, 'createFromConfig'], $config['storage']['args']);
 
-        return new Replication($master, $slaves, $storage);
+        return new Replication($primary, $replicas, $storage);
     }
 }

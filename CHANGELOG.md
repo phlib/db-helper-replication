@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Use `ext-memcached` in place of `ext-memcache`.
 - Move `Replication::createFromConfig()` static method to an instance method on
   new class `ReplicationFactory`.
+- DB config updated to avoid offensive term. Servers are set under `replicas`.
 ### Removed
 - Removed `replication:stats` CLI command which was not functional.
 - Removed support for PHP versions < v7.1 as they are no longer

@@ -22,12 +22,12 @@ composer require phlib/db-helper-replication
 
 ### Replication
 
-The Replication helper monitors slave lag, which it stores in Memcache. This
+The Replication helper monitors replica lag, which it stores in Memcache. This
 known lag can then be used to throttle long-running processes by introducing
 variable amounts of sleep.
 
-Set up slave monitoring using the CLI script (you might consider using Monit to
-run this automatically):
+Set up replica monitoring using the CLI script
+(you might consider using Monit to run this automatically):
 
 ```sh
 ./vendor/bin/db replication:monitor -c path/to/config.php -p /var/run/db-replication.pid -d start
@@ -49,11 +49,11 @@ Your config file might look something like this:
 ```php
 <?php
 $config = [
-    // master
+    // primary
     'host'     => '10.0.0.1',
     'username' => 'foo',
     'password' => 'bar',
-    'slaves'   => [
+    'replicas' => [
         [
             'host'     => '10.0.0.2',
             'username' => 'foo',

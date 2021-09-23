@@ -38,7 +38,7 @@ class ReplicationMonitorCommand extends DaemonCommand
     protected function configure()
     {
         $this->setName('replication:monitor')
-            ->setDescription('CLI for monitoring MySQL slave status.');
+            ->setDescription('CLI for monitoring MySQL replica status.');
     }
 
     /**
