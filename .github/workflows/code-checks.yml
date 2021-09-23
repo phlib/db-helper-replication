@@ -18,6 +18,13 @@ jobs:
 
     name: PHP ${{ matrix.php }} tests
 
+    services:
+      memcached:
+        image: memcached:latest
+        ports:
+          - 11211:11211
+        options: --health-cmd "timeout 5 bash -c 'cat < /dev/null > /dev/udp/127.0.0.1/11211'" --health-interval 10s --health-timeout 5s --health-retries 5
+
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -42,6 +49,10 @@ jobs:
 
       - name: PHPUnit
         run: vendor/bin/phpunit --coverage-clover=coverage.xml
+        env:
+          INTEGRATION_MEMCACHE_ENABLED: 1
+          INTEGRATION_MEMCACHE_HOST: 127.0.0.1
+          INTEGRATION_MEMCACHE_PORT: 11211
 
       - name: "Upload coverage to Codecov"
         uses: "codecov/codecov-action@v2"

@@ -134,4 +134,31 @@ class MemcacheTest extends TestCase
 
         $this->storage->setHistory($host, $history);
     }
+
+    /**
+     * @group integration
+     */
+    public function testCreateFromConfig()
+    {
+        if ((bool)getenv('INTEGRATION_MEMCACHE_ENABLED') !== true) {
+            static::markTestSkipped();
+            return;
+        }
+
+        $config = [
+            'host' => getenv('INTEGRATION_MEMCACHE_HOST'),
+            'port' => getenv('INTEGRATION_MEMCACHE_PORT'),
+            'timeout' => 10,
+        ];
+
+        $storage = Memcache::createFromConfig($config);
+
+        $host = sha1(uniqid());
+        $seconds = rand();
+
+        $storage->setSecondsBehind($host, $seconds);
+        $actual = $storage->getSecondsBehind($host);
+
+        static::assertSame($seconds, $actual);
+    }
 }

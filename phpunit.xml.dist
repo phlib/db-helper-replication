@@ -4,6 +4,11 @@
     beStrictAboutOutputDuringTests="true"
     colors="true"
 >
+    <php>
+        <env name="INTEGRATION_MEMCACHE_ENABLED" value="0" />
+        <env name="INTEGRATION_MEMCACHE_HOST" value="127.0.0.1" />
+        <env name="INTEGRATION_MEMCACHE_PORT" value="11211" />
+    </php>
     <testsuites>
         <testsuite name="Phlib Test Suite">
             <directory>tests</directory>
