@@ -5,6 +5,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
+### Fixed
+- `replication:monitor` CLI command did not initialise Replication when running
+  directly, without `--daemonize`.
 ### Changed
 - Use `ext-memcached` in place of `ext-memcache`.
 ### Removed

@@ -28,20 +28,11 @@ class ReplicationMonitorCommand extends DaemonCommand
     /**
      * @param InputInterface $input
      * @param OutputInterface $output
-     */
-    protected function onAfterDaemonizeChild(InputInterface $input, OutputInterface $output)
-    {
-        $this->replication = $this->getReplication();
-    }
-
-    /**
-     * @param InputInterface $input
-     * @param OutputInterface $output
      * @return void
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $this->replication->monitor();
+        $this->getReplication()->monitor();
     }
 
     /**
