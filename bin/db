@@ -14,10 +14,13 @@ foreach ($autoloadFiles as $autoloadFile) {
 use Symfony\Component\Console\Application;
 use Phlib\ConsoleConfiguration\Helper\ConfigurationHelper;
 use Phlib\DbHelperReplication\Console\ReplicationMonitorCommand;
+use Phlib\DbHelperReplication\ReplicationFactory;
 
 // lets go!
+$replicationFactory = new ReplicationFactory();
+
 $application = new Application();
-$application->add(new ReplicationMonitorCommand());
+$application->add(new ReplicationMonitorCommand($replicationFactory));
 
 ConfigurationHelper::initHelper(
     $application,

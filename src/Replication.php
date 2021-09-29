@@ -4,7 +4,6 @@ namespace Phlib\DbHelperReplication;
 
 use Phlib\DbHelperReplication\Exception\RuntimeException;
 use Phlib\DbHelperReplication\Exception\InvalidArgumentException;
-use Phlib\Db\Adapter;
 use Phlib\Db\AdapterInterface;
 
 /**
@@ -77,34 +76,6 @@ class Replication
                 throw new InvalidArgumentException('Specified slave is not an expected adapter.');
             }
         }
-    }
-
-    /**
-     * @param array $config
-     * @return self
-     */
-    public static function createFromConfig(array $config)
-    {
-        $master = new Adapter([
-            'host'     => $config['host'],
-            'username' => $config['username'],
-            'password' => $config['password']
-        ]);
-        $slaves = [];
-        foreach ($config['slaves'] as $slave) {
-            $slaves[] = new Adapter($slave);
-        }
-        $storageClass = $config['storage']['class'];
-        if (!class_exists($storageClass)) {
-            throw new InvalidArgumentException("Specified storage class '$storageClass' could not be found.");
-        }
-        if (!method_exists($storageClass, 'createFromConfig')) {
-            throw new InvalidArgumentException(
-                "Storage class '$storageClass' is missing required method 'createFromConfig'."
-            );
-        }
-        $storage = call_user_func_array([$storageClass, 'createFromConfig'], $config['storage']['args']);
-        return new static($master, $slaves, $storage);
     }
 
     /**

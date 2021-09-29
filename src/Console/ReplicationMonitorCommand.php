@@ -4,6 +4,7 @@ namespace Phlib\DbHelperReplication\Console;
 
 use Phlib\DbHelperReplication\Replication;
 use Phlib\ConsoleProcess\Command\DaemonCommand;
+use Phlib\DbHelperReplication\ReplicationFactory;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Output\StreamOutput;
@@ -15,9 +16,24 @@ use Symfony\Component\Console\Output\StreamOutput;
 class ReplicationMonitorCommand extends DaemonCommand
 {
     /**
+     * @var ReplicationFactory
+     */
+    private $replicationFactory;
+
+    /**
      * @var Replication
      */
     protected $replication;
+
+    /**
+     * @param ReplicationFactory $replicationFactory
+     */
+    public function __construct(ReplicationFactory $replicationFactory)
+    {
+        $this->replicationFactory = $replicationFactory;
+
+        parent::__construct();
+    }
 
     protected function configure()
     {
@@ -41,7 +57,7 @@ class ReplicationMonitorCommand extends DaemonCommand
     protected function getReplication()
     {
         $config = $this->getHelper('configuration')->fetch();
-        return Replication::createFromConfig($config);
+        return $this->replicationFactory->createFromConfig($config);
     }
 
     /**
