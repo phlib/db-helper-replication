@@ -2,6 +2,7 @@
 
 namespace Phlib\DbHelperReplication;
 
+use Phlib\DbHelperReplication\Exception\InvalidArgumentException;
 use Phlib\DbHelperReplication\Replication\StorageMock;
 use phpmock\phpunit\PHPMock;
 use PHPUnit\Framework\TestCase;
@@ -21,21 +22,17 @@ class ReplicationFactoryTest extends TestCase
         static::assertInstanceOf(Replication::class, $replication);
     }
 
-    /**
-     * @expectedException \Phlib\DbHelperReplication\Exception\InvalidArgumentException
-     */
     public function testCreateFromConfigWithInvalidStorageClass()
     {
+        $this->expectException(InvalidArgumentException::class);
         $config = $this->getDefaultConfig();
         $config['storage']['class'] = '\My\Unknown\Class';
         (new ReplicationFactory())->createFromConfig($config);
     }
 
-    /**
-     * @expectedException \Phlib\DbHelperReplication\Exception\InvalidArgumentException
-     */
     public function testCreateFromConfigWithInvalidStorageMethod()
     {
+        $this->expectException(InvalidArgumentException::class);
         $config = $this->getDefaultConfig();
         $config['storage']['class'] = \stdClass::class;
         (new ReplicationFactory())->createFromConfig($config);

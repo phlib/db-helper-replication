@@ -3,6 +3,7 @@
 namespace Phlib\DbHelperReplication\Replication;
 
 use Phlib\DbHelperReplication\Exception\RuntimeException;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -12,7 +13,7 @@ use PHPUnit\Framework\TestCase;
 class MemcacheTest extends TestCase
 {
     /**
-     * @var \Memcached|\PHPUnit_Framework_MockObject_MockObject
+     * @var \Memcached|MockObject
      */
     private $memcache;
 
@@ -21,9 +22,9 @@ class MemcacheTest extends TestCase
      */
     private $storage;
 
-    public function setUp()
+    protected function setUp()
     {
-        if (!extension_loaded('Memcached')) {
+        if (!extension_loaded(\Memcached::class)) {
             static::markTestSkipped();
             return;
         }
@@ -31,13 +32,6 @@ class MemcacheTest extends TestCase
         $this->memcache = $this->createMock(\Memcached::class);
         $this->storage = new Memcache($this->memcache);
         parent::setUp();
-    }
-
-    public function tearDown()
-    {
-        parent::tearDown();
-        $this->storage = null;
-        $this->memcache = null;
     }
 
     public function testImplementsInterface()

@@ -7,6 +7,7 @@ namespace Phlib\DbHelperReplication\Console;
 use Phlib\DbHelperReplication\Replication;
 use Phlib\DbHelperReplication\Replication\StorageMock;
 use Phlib\DbHelperReplication\ReplicationFactory;
+use PHPUnit\Framework\MockObject\MockObject;
 
 /**
  * @package Phlib\DbHelperReplication
@@ -15,12 +16,12 @@ use Phlib\DbHelperReplication\ReplicationFactory;
 class ReplicationMonitorCommandTest extends ConsoleTestCase
 {
     /**
-     * @var ReplicationFactory|\PHPUnit_Framework_MockObject_MockObject
+     * @var ReplicationFactory|MockObject
      */
     private $replicationFactory;
 
     /**
-     * @var Replication|\PHPUnit_Framework_MockObject_MockObject
+     * @var Replication|MockObject
      */
     private $replication;
 

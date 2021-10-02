@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Phlib\DbHelperReplication\Console;
 
 use Phlib\ConsoleConfiguration\Helper\ConfigurationHelper;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Command\Command;
@@ -27,7 +28,7 @@ class ConsoleTestCase extends TestCase
     protected $commandTester;
 
     /**
-     * @var ConfigurationHelper|\PHPUnit_Framework_MockObject_MockObject
+     * @var ConfigurationHelper|MockObject
      */
     protected $configurationHelper;
 

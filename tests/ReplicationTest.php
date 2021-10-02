@@ -3,8 +3,11 @@
 namespace Phlib\DbHelperReplication;
 
 use Phlib\Db\AdapterInterface;
+use Phlib\DbHelperReplication\Exception\InvalidArgumentException;
+use Phlib\DbHelperReplication\Exception\RuntimeException;
 use Phlib\DbHelperReplication\Replication\StorageInterface;
 use phpmock\phpunit\PHPMock;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -18,12 +21,12 @@ class ReplicationTest extends TestCase
     private const REPLICA_LAG_KEY = 'Seconds_Behind_Master';
 
     /**
-     * @var AdapterInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var AdapterInterface|MockObject
      */
     protected $primary;
 
     /**
-     * @var StorageInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var StorageInterface|MockObject
      */
     protected $storage;
 
@@ -40,18 +43,9 @@ class ReplicationTest extends TestCase
         parent::setUp();
     }
 
-    public function tearDown()
-    {
-        parent::tearDown();
-        $this->storage = null;
-        $this->primary = null;
-    }
-
-    /**
-     * @expectedException \Phlib\DbHelperReplication\Exception\InvalidArgumentException
-     */
     public function testConstructDoesNotAllowEmptyReplicas()
     {
+        $this->expectException(InvalidArgumentException::class);
         new Replication($this->primary, [], $this->storage);
     }
 
@@ -62,11 +56,9 @@ class ReplicationTest extends TestCase
         static::assertSame($this->storage, $replication->getStorage());
     }
 
-    /**
-     * @expectedException \Phlib\DbHelperReplication\Exception\InvalidArgumentException
-     */
     public function testConstructChecksReplicas()
     {
+        $this->expectException(InvalidArgumentException::class);
         $replicas = [new \stdClass()];
         new Replication($this->primary, $replicas, $this->storage);
     }
@@ -162,7 +154,7 @@ class ReplicationTest extends TestCase
                 self::REPLICA_LAG_KEY => 10,
             ]);
 
-        /** @var AdapterInterface|\PHPUnit_Framework_MockObject_MockObject $replica */
+        /** @var AdapterInterface|MockObject $replica */
         $replica = $this->createMock(AdapterInterface::class);
         $replica->expects(static::once())
             ->method('query')
@@ -175,16 +167,16 @@ class ReplicationTest extends TestCase
 
     /**
      * @param array $data
-     * @expectedException \Phlib\DbHelperReplication\Exception\RuntimeException
      * @dataProvider fetchStatusErrorsWithBadReturnedDataDataProvider
      */
     public function testFetchStatusErrorsWithBadReturnedData($data)
     {
+        $this->expectException(RuntimeException::class);
         $pdoStatement = $this->createMock(\PDOStatement::class);
         $pdoStatement->method('fetch')
             ->willReturn($data);
 
-        /** @var AdapterInterface|\PHPUnit_Framework_MockObject_MockObject $replica */
+        /** @var AdapterInterface|MockObject $replica */
         $replica = $this->createMock(AdapterInterface::class);
         $replica->method('query')
             ->willReturn($pdoStatement);
@@ -233,10 +225,10 @@ class ReplicationTest extends TestCase
     }
 
     /**
-     * @param AdapterInterface|\PHPUnit_Framework_MockObject_MockObject $replica
+     * @param AdapterInterface|MockObject $replica
      * @param mixed $return
      */
-    protected function setupReplica(\PHPUnit_Framework_MockObject_MockObject $replica, $return)
+    protected function setupReplica(MockObject $replica, $return)
     {
         $pdoStatement = $this->createMock(\PDOStatement::class);
         $pdoStatement->method('fetch')
