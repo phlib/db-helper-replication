@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Changed
 - Use `ext-memcached` in place of `ext-memcache`.
 ### Removed
+- Removed `replication:stats` CLI command which was not functional.
 - Removed support for PHP versions < v7.1 as they are no longer
   [actively supported](https://php.net/supported-versions.php) by the PHP project.
 
