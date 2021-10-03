@@ -11,11 +11,7 @@ use Phlib\DbHelperReplication\Exception\InvalidArgumentException;
  */
 class ReplicationFactory
 {
-    /**
-     * @param array $config
-     * @return Replication
-     */
-    public function createFromConfig(array $config)
+    public function createFromConfig(array $config): Replication
     {
         $primary = new Adapter([
             'host' => $config['host'],

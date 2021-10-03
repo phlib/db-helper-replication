@@ -15,14 +15,14 @@ class ReplicationFactoryTest extends TestCase
 {
     use PHPMock;
 
-    public function testCreateFromConfigSuccessfully()
+    public function testCreateFromConfigSuccessfully(): void
     {
         $config = $this->getDefaultConfig();
         $replication = (new ReplicationFactory())->createFromConfig($config);
         static::assertInstanceOf(Replication::class, $replication);
     }
 
-    public function testCreateFromConfigWithInvalidStorageClass()
+    public function testCreateFromConfigWithInvalidStorageClass(): void
     {
         $this->expectException(InvalidArgumentException::class);
         $config = $this->getDefaultConfig();
@@ -30,7 +30,7 @@ class ReplicationFactoryTest extends TestCase
         (new ReplicationFactory())->createFromConfig($config);
     }
 
-    public function testCreateFromConfigWithInvalidStorageMethod()
+    public function testCreateFromConfigWithInvalidStorageMethod(): void
     {
         $this->expectException(InvalidArgumentException::class);
         $config = $this->getDefaultConfig();
@@ -38,10 +38,7 @@ class ReplicationFactoryTest extends TestCase
         (new ReplicationFactory())->createFromConfig($config);
     }
 
-    /**
-     * @return array
-     */
-    public function getDefaultConfig()
+    public function getDefaultConfig(): array
     {
         return [
             'host' => '10.0.0.1',

@@ -30,7 +30,7 @@ class ReplicationTest extends TestCase
      */
     protected $storage;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->primary = $this->createMock(AdapterInterface::class);
         $this->primary->method('getConfig')
@@ -43,27 +43,27 @@ class ReplicationTest extends TestCase
         parent::setUp();
     }
 
-    public function testConstructDoesNotAllowEmptyReplicas()
+    public function testConstructDoesNotAllowEmptyReplicas(): void
     {
         $this->expectException(InvalidArgumentException::class);
         new Replication($this->primary, [], $this->storage);
     }
 
-    public function testGettingStorageReturnsSameInstance()
+    public function testGettingStorageReturnsSameInstance(): void
     {
         $replica = $this->createMock(AdapterInterface::class);
         $replication = new Replication($this->primary, [$replica], $this->storage);
         static::assertSame($this->storage, $replication->getStorage());
     }
 
-    public function testConstructChecksReplicas()
+    public function testConstructChecksReplicas(): void
     {
         $this->expectException(InvalidArgumentException::class);
         $replicas = [new \stdClass()];
         new Replication($this->primary, $replicas, $this->storage);
     }
 
-    public function testSetWeighting()
+    public function testSetWeighting(): void
     {
         $weighting = 12345;
         $replication = new Replication($this->primary, [$this->createMock(AdapterInterface::class)], $this->storage);
@@ -71,7 +71,7 @@ class ReplicationTest extends TestCase
         static::assertEquals($weighting, $replication->getWeighting());
     }
 
-    public function testSetMaximumSleep()
+    public function testSetMaximumSleep(): void
     {
         $maxSleep = 123456;
         $replication = new Replication($this->primary, [$this->createMock(AdapterInterface::class)], $this->storage);
@@ -80,10 +80,9 @@ class ReplicationTest extends TestCase
     }
 
     /**
-     * @param string $method
      * @dataProvider monitorRecordsToStorageDataProvider
      */
-    public function testMonitorRecordsToStorage($method)
+    public function testMonitorRecordsToStorage(string $method): void
     {
         $this->storage->expects(static::once())
             ->method($method);
@@ -95,7 +94,7 @@ class ReplicationTest extends TestCase
         $replication->monitor();
     }
 
-    public function monitorRecordsToStorageDataProvider()
+    public function monitorRecordsToStorageDataProvider(): array
     {
         return [
             ['setSecondsBehind'],
@@ -103,7 +102,7 @@ class ReplicationTest extends TestCase
         ];
     }
 
-    public function testHistoryGetsTrimmed()
+    public function testHistoryGetsTrimmed(): void
     {
         $maxEntries = Replication::MAX_HISTORY;
 
@@ -124,7 +123,7 @@ class ReplicationTest extends TestCase
         $replication->monitor();
     }
 
-    public function testHistoryGetsNewReplicaValue()
+    public function testHistoryGetsNewReplicaValue(): void
     {
         $maxEntries = Replication::MAX_HISTORY;
         $newValue = 5;
@@ -146,7 +145,7 @@ class ReplicationTest extends TestCase
         $replication->monitor();
     }
 
-    public function testFetchStatusMakesCorrectCall()
+    public function testFetchStatusMakesCorrectCall(): void
     {
         $pdoStatement = $this->createMock(\PDOStatement::class);
         $pdoStatement->method('fetch')
@@ -166,10 +165,10 @@ class ReplicationTest extends TestCase
     }
 
     /**
-     * @param array $data
+     * @param array|false $data
      * @dataProvider fetchStatusErrorsWithBadReturnedDataDataProvider
      */
-    public function testFetchStatusErrorsWithBadReturnedData($data)
+    public function testFetchStatusErrorsWithBadReturnedData($data): void
     {
         $this->expectException(RuntimeException::class);
         $pdoStatement = $this->createMock(\PDOStatement::class);
@@ -185,7 +184,7 @@ class ReplicationTest extends TestCase
         $replication->fetchStatus($replica);
     }
 
-    public function fetchStatusErrorsWithBadReturnedDataDataProvider()
+    public function fetchStatusErrorsWithBadReturnedDataDataProvider(): array
     {
         return [
             [false],
@@ -198,7 +197,7 @@ class ReplicationTest extends TestCase
         ];
     }
 
-    public function testThrottleWithNoReplicaLag()
+    public function testThrottleWithNoReplicaLag(): void
     {
         $this->storage->method('getSecondsBehind')
             ->willReturn(0);
@@ -211,7 +210,7 @@ class ReplicationTest extends TestCase
         (new Replication($this->primary, [$replica], $this->storage))->throttle();
     }
 
-    public function testThrottleWithReplicaLag()
+    public function testThrottleWithReplicaLag(): void
     {
         $this->storage->method('getSecondsBehind')
             ->willReturn(500);
@@ -228,7 +227,7 @@ class ReplicationTest extends TestCase
      * @param AdapterInterface|MockObject $replica
      * @param mixed $return
      */
-    protected function setupReplica(MockObject $replica, $return)
+    protected function setupReplica(MockObject $replica, $return): void
     {
         $pdoStatement = $this->createMock(\PDOStatement::class);
         $pdoStatement->method('fetch')

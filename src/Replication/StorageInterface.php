@@ -9,34 +9,25 @@ namespace Phlib\DbHelperReplication\Replication;
 interface StorageInterface
 {
     /**
-     * @param array $config
      * @return static
      */
     public static function createFromConfig(array $config);
 
-    /**
-     * @param string $host
-     * @return int
-     */
-    public function getSecondsBehind($host);
+    public function getSecondsBehind(string $host): int;
 
     /**
-     * @param string $host
-     * @param int $value
      * @return $this
      */
-    public function setSecondsBehind($host, $value);
+    public function setSecondsBehind(string $host, int $value);
 
     /**
-     * @param string $host
      * @return int[]
      */
-    public function getHistory($host);
+    public function getHistory(string $host): array;
 
     /**
-     * @param string $host
      * @param int[] $values
      * @return $this
      */
-    public function setHistory($host, array $values);
+    public function setHistory(string $host, array $values);
 }

@@ -13,7 +13,7 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class ReplicationMonitorCommandStub extends ReplicationMonitorCommand
 {
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $result = parent::execute($input, $output);
 

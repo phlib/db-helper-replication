@@ -11,11 +11,7 @@ use Phlib\DbHelperReplication\Exception\RuntimeException;
  */
 class Memcache implements StorageInterface
 {
-    /**
-     * @param array $memcacheConfig
-     * @return static
-     */
-    public static function createFromConfig(array $memcacheConfig)
+    public static function createFromConfig(array $memcacheConfig): self
     {
         $memcache = new \Memcached();
 
@@ -39,39 +35,26 @@ class Memcache implements StorageInterface
      */
     protected $memcache;
 
-    /**
-     * @param \Memcached $memcache
-     */
     public function __construct(\Memcached $memcache)
     {
         $this->memcache = $memcache;
     }
 
-    /**
-     * @param string $host
-     * @return string
-     */
-    private function getKey($host)
+    private function getKey(string $host): string
     {
         return "DbReplication:{$host}";
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function getSecondsBehind($host)
+    public function getSecondsBehind(string $host): int
     {
         $key = $this->getKey($host) . ':SecondsBehind';
         return $this->memcache->get($key);
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function setSecondsBehind($host, $value)
+    public function setSecondsBehind(string $host, int $value): self
     {
         $key = $this->getKey($host) . ':SecondsBehind';
-        $result = $this->memcache->set($key, (int)$value);
+        $result = $this->memcache->set($key, $value);
         if ($result === false) {
             throw new RuntimeException('Unable to store value to Memcache');
         }
@@ -80,18 +63,18 @@ class Memcache implements StorageInterface
     }
 
     /**
-     * @inheritdoc
+     * @return int[]
      */
-    public function getHistory($host)
+    public function getHistory(string $host): array
     {
         $key = $this->getKey($host) . ':History';
         return unserialize($this->memcache->get($key));
     }
 
     /**
-     * @inheritdoc
+     * @param int[] $values
      */
-    public function setHistory($host, array $values)
+    public function setHistory(string $host, array $values): self
     {
         $key = $this->getKey($host) . ':History';
         $result = $this->memcache->set($key, serialize($values));

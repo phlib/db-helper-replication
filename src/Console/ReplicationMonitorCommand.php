@@ -25,9 +25,6 @@ class ReplicationMonitorCommand extends DaemonCommand
      */
     protected $replication;
 
-    /**
-     * @param ReplicationFactory $replicationFactory
-     */
     public function __construct(ReplicationFactory $replicationFactory)
     {
         $this->replicationFactory = $replicationFactory;
@@ -35,35 +32,26 @@ class ReplicationMonitorCommand extends DaemonCommand
         parent::__construct();
     }
 
-    protected function configure()
+    protected function configure(): void
     {
         $this->setName('replication:monitor')
             ->setDescription('CLI for monitoring MySQL replica status.');
     }
 
-    /**
-     * @param InputInterface $input
-     * @param OutputInterface $output
-     * @return void
-     */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $this->getReplication()->monitor();
+
+        return 0;
     }
 
-    /**
-     * @return Replication
-     */
-    protected function getReplication()
+    protected function getReplication(): Replication
     {
         $config = $this->getHelper('configuration')->fetch();
         return $this->replicationFactory->createFromConfig($config);
     }
 
-    /**
-     * @return StreamOutput
-     */
-    protected function createChildOutput()
+    protected function createChildOutput(): StreamOutput
     {
         $filename = getcwd() . '/replication-monitor.log';
         return new StreamOutput(fopen($filename, 'a'));

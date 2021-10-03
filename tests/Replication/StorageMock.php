@@ -8,39 +8,34 @@ namespace Phlib\DbHelperReplication\Replication;
  */
 class StorageMock implements StorageInterface
 {
-    /**
-     * @inheritdoc
-     */
-    public static function createFromConfig(array $config)
+    public static function createFromConfig(array $config): self
     {
         return new static();
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function getSecondsBehind($host)
+    public function getSecondsBehind(string $host): int
     {
+        return 0;
+    }
+
+    public function setSecondsBehind(string $host, int $value): self
+    {
+        return $this;
     }
 
     /**
-     * @inheritdoc
+     * @return int[]
      */
-    public function setSecondsBehind($host, $value)
+    public function getHistory(string $host): array
     {
+        return [];
     }
 
     /**
-     * @inheritdoc
+     * @param int[] $values
      */
-    public function getHistory($host)
+    public function setHistory(string $host, array $values): self
     {
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function setHistory($host, array $values)
-    {
+        return $this;
     }
 }

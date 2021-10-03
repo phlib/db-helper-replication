@@ -22,7 +22,7 @@ class MemcacheTest extends TestCase
      */
     private $storage;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         if (!extension_loaded(\Memcached::class)) {
             static::markTestSkipped();
@@ -34,12 +34,12 @@ class MemcacheTest extends TestCase
         parent::setUp();
     }
 
-    public function testImplementsInterface()
+    public function testImplementsInterface(): void
     {
         static::assertInstanceOf(StorageInterface::class, $this->storage);
     }
 
-    public function testGetSecondsBehind()
+    public function testGetSecondsBehind(): void
     {
         $host = sha1(uniqid());
         $expectedKey = "DbReplication:{$host}:SecondsBehind";
@@ -54,7 +54,7 @@ class MemcacheTest extends TestCase
         static::assertEquals($seconds, $actual);
     }
 
-    public function testSetSecondsBehind()
+    public function testSetSecondsBehind(): void
     {
         $host = sha1(uniqid());
         $expectedKey = "DbReplication:{$host}:SecondsBehind";
@@ -68,7 +68,7 @@ class MemcacheTest extends TestCase
         $this->storage->setSecondsBehind($host, $seconds);
     }
 
-    public function testSetSecondsBehindFailure()
+    public function testSetSecondsBehindFailure(): void
     {
         $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('Unable to store value');
@@ -83,7 +83,7 @@ class MemcacheTest extends TestCase
         $this->storage->setSecondsBehind($host, $seconds);
     }
 
-    public function testGetHistory()
+    public function testGetHistory(): void
     {
         $host = sha1(uniqid());
         $expectedKey = "DbReplication:{$host}:History";
@@ -99,7 +99,7 @@ class MemcacheTest extends TestCase
         static::assertEquals($history, $actual);
     }
 
-    public function testSetHistory()
+    public function testSetHistory(): void
     {
         $host = sha1(uniqid());
         $expectedKey = "DbReplication:{$host}:History";
@@ -114,7 +114,7 @@ class MemcacheTest extends TestCase
         $this->storage->setHistory($host, $history);
     }
 
-    public function testSetHistoryFailure()
+    public function testSetHistoryFailure(): void
     {
         $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('Unable to store value');
@@ -132,7 +132,7 @@ class MemcacheTest extends TestCase
     /**
      * @group integration
      */
-    public function testCreateFromConfig()
+    public function testCreateFromConfig(): void
     {
         if ((bool)getenv('INTEGRATION_MEMCACHE_ENABLED') !== true) {
             static::markTestSkipped();

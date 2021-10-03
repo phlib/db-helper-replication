@@ -12,7 +12,7 @@ use Phlib\DbHelperReplication\Exception\RuntimeException;
  */
 class Replication
 {
-    const MAX_HISTORY = 30;
+    public const MAX_HISTORY = 30;
 
     private const REPLICA_LAG_KEY = 'Seconds_Behind_Master';
 
@@ -57,11 +57,7 @@ class Replication
     protected $updateInterval = 1;
 
     /**
-     * Constructor
-     *
-     * @param AdapterInterface $primary
      * @param AdapterInterface[] $replicas
-     * @param Replication\StorageInterface $storage
      */
     public function __construct(AdapterInterface $primary, array $replicas, Replication\StorageInterface $storage)
     {
@@ -80,62 +76,37 @@ class Replication
         }
     }
 
-    /**
-     * @return Replication\StorageInterface
-     */
-    public function getStorage()
+    public function getStorage(): Replication\StorageInterface
     {
         return $this->storage;
     }
 
-    /**
-     * Get throttle weighting
-     *
-     * @return int
-     */
-    public function getWeighting()
+    public function getWeighting(): int
     {
         return $this->weighting;
     }
 
-    /**
-     * Set throttle weighting
-     *
-     * @param int $weighting
-     * @return $this
-     */
-    public function setWeighting($weighting)
+    public function setWeighting(int $weighting): self
     {
-        $this->weighting = (int)$weighting;
+        $this->weighting = $weighting;
         return $this;
     }
 
     /**
-     * Get the maximum number of milliseconds the throttle can sleep for.
-     *
-     * @return int
+     * @return int milliseconds
      */
-    public function getMaximumSleep()
+    public function getMaximumSleep(): int
     {
         return $this->maxSleep;
     }
 
-    /**
-     * Set the maximum number of milliseconds the throttle can sleep for.
-     *
-     * @param int $milliseconds
-     * @return $this
-     */
-    public function setMaximumSleep($milliseconds)
+    public function setMaximumSleep(int $milliseconds): self
     {
-        $this->maxSleep = (int)$milliseconds;
+        $this->maxSleep = $milliseconds;
         return $this;
     }
 
-    /**
-     * @return $this
-     */
-    public function monitor()
+    public function monitor(): self
     {
         $maxBehind = 0;
         foreach ($this->replicas as $replica) {
@@ -164,11 +135,7 @@ class Replication
         return $this;
     }
 
-    /**
-     * @param AdapterInterface $replica
-     * @return array
-     */
-    public function fetchStatus(AdapterInterface $replica)
+    public function fetchStatus(AdapterInterface $replica): array
     {
         $status = $replica->query('SHOW SLAVE STATUS')
             ->fetch(\PDO::FETCH_ASSOC);
@@ -183,18 +150,14 @@ class Replication
     }
 
     /**
-     * Throttle
-     *
      * Updates the stored load value if out-of-date, and sleeps for the required
      * time if throttling is enabled.
-     *
-     * @return $this
      */
-    public function throttle()
+    public function throttle(): self
     {
         $currentInterval = time() - $this->loadUpdated;
         if ($currentInterval > $this->updateInterval) {
-            $this->loadValue = (int)$this->storage->getSecondsBehind($this->host);
+            $this->loadValue = $this->storage->getSecondsBehind($this->host);
             $this->loadUpdated = time();
         }
         $this->sleep();
@@ -202,12 +165,7 @@ class Replication
         return $this;
     }
 
-    /**
-     * Sleep for stored sleep time
-     *
-     * @return $this
-     */
-    protected function sleep()
+    protected function sleep(): self
     {
         $alteredLoad = pow($this->loadValue, 5.2) / 100;
         $weighting = $this->weighting / 100;
