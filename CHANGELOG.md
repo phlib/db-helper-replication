@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Move `Replication::createFromConfig()` static method to an instance method on
   new class `ReplicationFactory`.
 - DB config updated to avoid offensive term. Servers are set under `replicas`.
+- Reduce visibility of internal methods and properties.
 ### Removed
 - Removed `replication:stats` CLI command which was not functional.
 - Removed support for PHP versions < v7.1 as they are no longer

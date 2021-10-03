@@ -33,7 +33,7 @@ class Memcache implements StorageInterface
     /**
      * @var \Memcached
      */
-    protected $memcache;
+    private $memcache;
 
     public function __construct(\Memcached $memcache)
     {

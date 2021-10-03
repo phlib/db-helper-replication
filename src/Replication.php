@@ -16,54 +16,50 @@ class Replication
 
     private const REPLICA_LAG_KEY = 'Seconds_Behind_Master';
 
+    private const UPDATE_INTERVAL = 1;
+
     /**
-     * @var AdapterInterface
+     * @var string
      */
-    protected $primary;
+    private $primaryHost;
 
     /**
      * @var AdapterInterface[]
      */
-    protected $replicas;
+    private $replicas;
 
     /**
      * @var Replication\StorageInterface
      */
-    protected $storage;
+    private $storage;
 
     /**
      * @var int
      */
-    protected $weighting = 100;
+    private $weighting = 100;
 
     /**
      * @var int
      */
-    protected $maxSleep = 1000; // ms
+    private $maxSleep = 1000; // ms
 
     /**
      * @var int
      */
-    protected $loadValue = 0;
+    private $loadValue = 0;
 
     /**
      * @var int
      */
-    protected $loadUpdated = 0;
-
-    /**
-     * @var int
-     */
-    protected $updateInterval = 1;
+    private $loadUpdated = 0;
 
     /**
      * @param AdapterInterface[] $replicas
      */
     public function __construct(AdapterInterface $primary, array $replicas, Replication\StorageInterface $storage)
     {
-        $this->primary = $primary;
+        $this->primaryHost = $primary->getConfig()['host'];
         $this->replicas = $replicas;
-        $this->host = $primary->getConfig()['host'];
         $this->storage = $storage;
 
         if (empty($replicas)) {
@@ -115,7 +111,7 @@ class Replication
         }
 
         // append data point to the history for this host
-        $history = $this->storage->getHistory($this->host);
+        $history = $this->storage->getHistory($this->primaryHost);
         $history[] = $maxBehind;
         if (count($history) > self::MAX_HISTORY) {
             // trim the history
@@ -129,8 +125,8 @@ class Replication
             $avgBehind = ceil(array_sum($history) / $historyLength);
         }
 
-        $this->storage->setSecondsBehind($this->host, $avgBehind);
-        $this->storage->setHistory($this->host, $history);
+        $this->storage->setSecondsBehind($this->primaryHost, $avgBehind);
+        $this->storage->setHistory($this->primaryHost, $history);
 
         return $this;
     }
@@ -156,8 +152,8 @@ class Replication
     public function throttle(): self
     {
         $currentInterval = time() - $this->loadUpdated;
-        if ($currentInterval > $this->updateInterval) {
-            $this->loadValue = $this->storage->getSecondsBehind($this->host);
+        if ($currentInterval > self::UPDATE_INTERVAL) {
+            $this->loadValue = $this->storage->getSecondsBehind($this->primaryHost);
             $this->loadUpdated = time();
         }
         $this->sleep();

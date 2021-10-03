@@ -23,12 +23,12 @@ class ReplicationTest extends TestCase
     /**
      * @var AdapterInterface|MockObject
      */
-    protected $primary;
+    private $primary;
 
     /**
      * @var StorageInterface|MockObject
      */
-    protected $storage;
+    private $storage;
 
     protected function setUp(): void
     {

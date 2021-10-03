@@ -23,7 +23,7 @@ class ReplicationMonitorCommand extends DaemonCommand
     /**
      * @var Replication
      */
-    protected $replication;
+    private $replication;
 
     public function __construct(ReplicationFactory $replicationFactory)
     {
