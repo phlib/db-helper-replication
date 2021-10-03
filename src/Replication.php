@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Phlib\DbHelperReplication;
 
 use Phlib\Db\AdapterInterface;
@@ -122,7 +124,7 @@ class Replication
         $avgBehind = 0;
         $historyLength = count($history);
         if ($historyLength > 0) {
-            $avgBehind = ceil(array_sum($history) / $historyLength);
+            $avgBehind = (int)ceil(array_sum($history) / $historyLength);
         }
 
         $this->storage->setSecondsBehind($this->primaryHost, $avgBehind);
@@ -163,11 +165,11 @@ class Replication
 
     protected function sleep(): self
     {
-        $alteredLoad = pow($this->loadValue, 5.2) / 100;
+        $alteredLoad = $this->loadValue ** 5.2 / 100;
         $weighting = $this->weighting / 100;
         $sleepMs = min($alteredLoad * $weighting, $this->maxSleep);
 
-        usleep(floor($sleepMs * 1000));
+        usleep((int)floor($sleepMs * 1000));
 
         return $this;
     }

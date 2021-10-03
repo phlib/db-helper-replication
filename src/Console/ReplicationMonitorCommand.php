@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Phlib\DbHelperReplication\Console;
 
 use Phlib\ConsoleProcess\Command\DaemonCommand;

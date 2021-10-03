@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Phlib\DbHelperReplication\Replication;
 
 use Phlib\DbHelperReplication\Exception\RuntimeException;
@@ -51,7 +53,7 @@ class MemcacheTest extends TestCase
             ->willReturn($seconds);
 
         $actual = $this->storage->getSecondsBehind($host);
-        static::assertEquals($seconds, $actual);
+        static::assertSame($seconds, $actual);
     }
 
     public function testSetSecondsBehind(): void
@@ -96,7 +98,7 @@ class MemcacheTest extends TestCase
             ->willReturn($serialized);
 
         $actual = $this->storage->getHistory($host);
-        static::assertEquals($history, $actual);
+        static::assertSame($history, $actual);
     }
 
     public function testSetHistory(): void
@@ -141,7 +143,7 @@ class MemcacheTest extends TestCase
 
         $config = [
             'host' => getenv('INTEGRATION_MEMCACHE_HOST'),
-            'port' => getenv('INTEGRATION_MEMCACHE_PORT'),
+            'port' => (int)getenv('INTEGRATION_MEMCACHE_PORT'),
             'timeout' => 10,
         ];
 

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Phlib\DbHelperReplication;
 
 use Phlib\Db\AdapterInterface;
@@ -68,7 +70,7 @@ class ReplicationTest extends TestCase
         $weighting = 12345;
         $replication = new Replication($this->primary, [$this->createMock(AdapterInterface::class)], $this->storage);
         $replication->setWeighting($weighting);
-        static::assertEquals($weighting, $replication->getWeighting());
+        static::assertSame($weighting, $replication->getWeighting());
     }
 
     public function testSetMaximumSleep(): void
@@ -76,7 +78,7 @@ class ReplicationTest extends TestCase
         $maxSleep = 123456;
         $replication = new Replication($this->primary, [$this->createMock(AdapterInterface::class)], $this->storage);
         $replication->setMaximumSleep($maxSleep);
-        static::assertEquals($maxSleep, $replication->getMaximumSleep());
+        static::assertSame($maxSleep, $replication->getMaximumSleep());
     }
 
     /**
@@ -197,30 +199,31 @@ class ReplicationTest extends TestCase
         ];
     }
 
-    public function testThrottleWithNoReplicaLag(): void
+    /**
+     * @dataProvider dataThrottleSleepTime
+     */
+    public function testThrottleSleepTime(int $secondsBehind, int $expectedSleep): void
     {
         $this->storage->method('getSecondsBehind')
-            ->willReturn(0);
+            ->willReturn($secondsBehind);
 
         $usleep = $this->getFunctionMock(__NAMESPACE__, 'usleep');
         $usleep->expects(static::once())
-            ->with(0);
+            ->with($expectedSleep);
 
         $replica = $this->createMock(AdapterInterface::class);
         (new Replication($this->primary, [$replica], $this->storage))->throttle();
     }
 
-    public function testThrottleWithReplicaLag(): void
+    public function dataThrottleSleepTime(): array
     {
-        $this->storage->method('getSecondsBehind')
-            ->willReturn(500);
-
-        $usleep = $this->getFunctionMock(__NAMESPACE__, 'usleep');
-        $usleep->expects(static::once())
-            ->with(static::greaterThan(0));
-
-        $replica = $this->createMock(AdapterInterface::class);
-        (new Replication($this->primary, [$replica], $this->storage))->throttle();
+        return [
+            'no-lag' => [0, 0],
+            'low-value' => [2, 367],
+            'high-value' => [8, 496670],
+            'over-max-sleep-1' => [10, 1000000],
+            'over-max-sleep-2' => [500, 1000000],
+        ];
     }
 
     /**
