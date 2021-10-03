@@ -14,10 +14,10 @@
         "php": "^7.4",
         "ext-pdo": "*",
 
-        "phlib/db": "^1",
-        "symfony/console": "^3",
-        "phlib/console-configuration": "^1.0",
-        "phlib/console-process": "^0.7"
+        "phlib/db": "^2",
+        "symfony/console": "^5",
+        "phlib/console-configuration": "^2",
+        "phlib/console-process": "^2"
     },
     "suggest": {
         "ext-memcached": "Use to cache lag values"
