@@ -141,7 +141,7 @@ class ReplicationTest extends TestCase
 
         $this->storage->expects(static::once())
             ->method('setHistory')
-            ->with(static::anything(), static::contains($newValue));
+            ->with(static::anything(), static::containsIdentical($newValue));
 
         $replication = new Replication($this->primary, [$replica], $this->storage);
         $replication->monitor();

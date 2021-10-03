@@ -25,7 +25,6 @@ class MemcacheTest extends TestCase
     {
         if (!extension_loaded(\Memcached::class)) {
             static::markTestSkipped();
-            return;
         }
 
         $this->memcache = $this->createMock(\Memcached::class);
