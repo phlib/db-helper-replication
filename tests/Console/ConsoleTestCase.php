@@ -17,20 +17,14 @@ use Symfony\Component\Console\Tester\CommandTester;
  */
 class ConsoleTestCase extends TestCase
 {
-    /**
-     * @var Command
-     */
-    protected $command;
+    protected Command $command;
 
-    /**
-     * @var CommandTester
-     */
-    protected $commandTester;
+    protected CommandTester $commandTester;
 
     /**
      * @var ConfigurationHelper|MockObject
      */
-    protected $configurationHelper;
+    protected MockObject $configurationHelper;
 
     protected function setUp(): void
     {

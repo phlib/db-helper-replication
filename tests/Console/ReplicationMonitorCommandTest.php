@@ -18,12 +18,12 @@ class ReplicationMonitorCommandTest extends ConsoleTestCase
     /**
      * @var ReplicationFactory|MockObject
      */
-    private $replicationFactory;
+    private MockObject $replicationFactory;
 
     /**
      * @var Replication|MockObject
      */
-    private $replication;
+    private MockObject $replication;
 
     protected function setUp(): void
     {

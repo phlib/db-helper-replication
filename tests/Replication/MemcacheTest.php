@@ -17,12 +17,9 @@ class MemcacheTest extends TestCase
     /**
      * @var \Memcached|MockObject
      */
-    private $memcache;
+    private MockObject $memcache;
 
-    /**
-     * @var Memcache
-     */
-    private $storage;
+    private Memcache $storage;
 
     protected function setUp(): void
     {

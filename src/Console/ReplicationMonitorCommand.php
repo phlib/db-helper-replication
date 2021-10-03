@@ -17,10 +17,7 @@ use Symfony\Component\Console\Output\StreamOutput;
  */
 class ReplicationMonitorCommand extends DaemonCommand
 {
-    /**
-     * @var ReplicationFactory
-     */
-    private $replicationFactory;
+    private ReplicationFactory $replicationFactory;
 
     /**
      * @var Replication

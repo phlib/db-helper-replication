@@ -20,40 +20,22 @@ class Replication
 
     private const UPDATE_INTERVAL = 1;
 
-    /**
-     * @var string
-     */
-    private $primaryHost;
+    private string $primaryHost;
 
     /**
      * @var AdapterInterface[]
      */
-    private $replicas;
+    private array $replicas;
 
-    /**
-     * @var Replication\StorageInterface
-     */
-    private $storage;
+    private Replication\StorageInterface $storage;
 
-    /**
-     * @var int
-     */
-    private $weighting = 100;
+    private int $weighting = 100;
 
-    /**
-     * @var int
-     */
-    private $maxSleep = 1000; // ms
+    private int $maxSleep = 1000; // ms
 
-    /**
-     * @var int
-     */
-    private $loadValue = 0;
+    private int $loadValue = 0;
 
-    /**
-     * @var int
-     */
-    private $loadUpdated = 0;
+    private int $loadUpdated = 0;
 
     /**
      * @param AdapterInterface[] $replicas

@@ -32,10 +32,7 @@ class Memcache implements StorageInterface
         return new static($memcache);
     }
 
-    /**
-     * @var \Memcached
-     */
-    private $memcache;
+    private \Memcached $memcache;
 
     public function __construct(\Memcached $memcache)
     {

@@ -10,17 +10,11 @@ namespace Phlib\DbHelperReplication\Replication;
  */
 interface StorageInterface
 {
-    /**
-     * @return static
-     */
-    public static function createFromConfig(array $config);
+    public static function createFromConfig(array $config): self;
 
     public function getSecondsBehind(string $host): int;
 
-    /**
-     * @return $this
-     */
-    public function setSecondsBehind(string $host, int $value);
+    public function setSecondsBehind(string $host, int $value): self;
 
     /**
      * @return int[]
@@ -29,7 +23,6 @@ interface StorageInterface
 
     /**
      * @param int[] $values
-     * @return $this
      */
-    public function setHistory(string $host, array $values);
+    public function setHistory(string $host, array $values): self;
 }
