@@ -18,11 +18,6 @@ class ReplicationMonitorCommand extends DaemonCommand
 {
     private ReplicationFactory $replicationFactory;
 
-    /**
-     * @var Replication
-     */
-    private $replication;
-
     public function __construct(ReplicationFactory $replicationFactory)
     {
         $this->replicationFactory = $replicationFactory;
