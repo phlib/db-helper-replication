@@ -17,7 +17,7 @@
         "phlib/db": "^2",
         "symfony/console": "^5",
         "phlib/console-configuration": "^2",
-        "phlib/console-process": "^2"
+        "phlib/console-process": "^3"
     },
     "suggest": {
         "ext-memcached": "Use to cache lag values"

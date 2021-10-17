@@ -9,7 +9,6 @@ use Phlib\DbHelperReplication\Replication;
 use Phlib\DbHelperReplication\ReplicationFactory;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Output\StreamOutput;
 
 /**
  * @package Phlib\DbHelperReplication
@@ -48,11 +47,5 @@ class ReplicationMonitorCommand extends DaemonCommand
     {
         $config = $this->getHelper('configuration')->fetch();
         return $this->replicationFactory->createFromConfig($config);
-    }
-
-    protected function createChildOutput(): StreamOutput
-    {
-        $filename = getcwd() . '/replication-monitor.log';
-        return new StreamOutput(fopen($filename, 'a'));
     }
 }
