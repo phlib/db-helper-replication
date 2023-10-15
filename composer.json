@@ -15,9 +15,9 @@
         "ext-pdo": "*",
 
         "phlib/db": "^2",
-        "symfony/console": "^5",
+        "symfony/console": "^5 || ^6",
         "phlib/console-configuration": "^2",
-        "phlib/console-process": "^3"
+        "phlib/console-process": "^3 || ^4"
     },
     "suggest": {
         "ext-memcached": "Use to cache lag values"
