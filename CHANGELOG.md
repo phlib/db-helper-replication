@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Changed
 - Allow phlib/console-configuration v3 dependency.
 - Allow Symfony v7 dependencies.
+### Removed
+- Removed support for PHP versions <= v8.0 as they are no longer
+  [actively supported](https://php.net/supported-versions.php) by the PHP project.
 
 ## [0.3.1] - 2023-10-15
 ### Changed

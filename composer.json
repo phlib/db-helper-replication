@@ -11,13 +11,13 @@
         }
     ],
     "require": {
-        "php": "^7.4 || ^8.0",
+        "php": "^8.1",
         "ext-pdo": "*",
 
         "phlib/db": "^2",
-        "symfony/console": "^5 || ^6 || ^7",
-        "phlib/console-configuration": "^2 || ^3",
-        "phlib/console-process": "^3 || ^4"
+        "symfony/console": "^6 || ^7",
+        "phlib/console-configuration": "^3",
+        "phlib/console-process": "^4"
     },
     "suggest": {
         "ext-memcached": "Use to cache lag values"
