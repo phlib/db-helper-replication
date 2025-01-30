@@ -20,14 +20,7 @@ class Replication
 
     private const UPDATE_INTERVAL = 1;
 
-    private string $primaryHost;
-
-    /**
-     * @var AdapterInterface[]
-     */
-    private array $replicas;
-
-    private Replication\StorageInterface $storage;
+    private readonly string $primaryHost;
 
     private int $weighting = 100;
 
@@ -40,16 +33,17 @@ class Replication
     /**
      * @param AdapterInterface[] $replicas
      */
-    public function __construct(AdapterInterface $primary, array $replicas, Replication\StorageInterface $storage)
-    {
+    public function __construct(
+        AdapterInterface $primary,
+        private readonly array $replicas,
+        private readonly Replication\StorageInterface $storage,
+    ) {
         $this->primaryHost = $primary->getConfig()['host'];
-        $this->replicas = $replicas;
-        $this->storage = $storage;
 
-        if (empty($replicas)) {
+        if (empty($this->replicas)) {
             throw new InvalidArgumentException('Missing required list of replicas.');
         }
-        foreach ($replicas as $replica) {
+        foreach ($this->replicas as $replica) {
             if (!$replica instanceof AdapterInterface) {
                 throw new InvalidArgumentException('Specified replica is not an expected adapter.');
             }

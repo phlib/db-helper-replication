@@ -32,11 +32,9 @@ class Memcache implements StorageInterface
         return new static($memcache);
     }
 
-    private \Memcached $memcache;
-
-    public function __construct(\Memcached $memcache)
-    {
-        $this->memcache = $memcache;
+    public function __construct(
+        private readonly \Memcached $memcache,
+    ) {
     }
 
     private function getKey(string $host): string

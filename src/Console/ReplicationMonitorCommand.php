@@ -16,12 +16,9 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class ReplicationMonitorCommand extends DaemonCommand
 {
-    private ReplicationFactory $replicationFactory;
-
-    public function __construct(ReplicationFactory $replicationFactory)
-    {
-        $this->replicationFactory = $replicationFactory;
-
+    public function __construct(
+        private readonly ReplicationFactory $replicationFactory,
+    ) {
         parent::__construct();
     }
 
