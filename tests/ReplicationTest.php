@@ -9,6 +9,7 @@ use Phlib\DbHelperReplication\Exception\InvalidArgumentException;
 use Phlib\DbHelperReplication\Exception\RuntimeException;
 use Phlib\DbHelperReplication\Replication\StorageInterface;
 use phpmock\phpunit\PHPMock;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
@@ -22,15 +23,9 @@ class ReplicationTest extends TestCase
 
     private const REPLICA_LAG_KEY = 'Seconds_Behind_Master';
 
-    /**
-     * @var AdapterInterface|MockObject
-     */
-    private MockObject $primary;
+    private AdapterInterface&MockObject $primary;
 
-    /**
-     * @var StorageInterface|MockObject
-     */
-    private MockObject $storage;
+    private StorageInterface&MockObject $storage;
 
     protected function setUp(): void
     {
@@ -81,9 +76,7 @@ class ReplicationTest extends TestCase
         static::assertSame($maxSleep, $replication->getMaximumSleep());
     }
 
-    /**
-     * @dataProvider monitorRecordsToStorageDataProvider
-     */
+    #[DataProvider('monitorRecordsToStorageDataProvider')]
     public function testMonitorRecordsToStorage(string $method): void
     {
         $this->storage->expects(static::once())
@@ -96,7 +89,7 @@ class ReplicationTest extends TestCase
         $replication->monitor();
     }
 
-    public function monitorRecordsToStorageDataProvider(): array
+    public static function monitorRecordsToStorageDataProvider(): array
     {
         return [
             ['setSecondsBehind'],
@@ -166,11 +159,8 @@ class ReplicationTest extends TestCase
         $replication->fetchStatus($replica);
     }
 
-    /**
-     * @param array|false $data
-     * @dataProvider fetchStatusErrorsWithBadReturnedDataDataProvider
-     */
-    public function testFetchStatusErrorsWithBadReturnedData($data): void
+    #[DataProvider('fetchStatusErrorsWithBadReturnedDataDataProvider')]
+    public function testFetchStatusErrorsWithBadReturnedData(array|false $data): void
     {
         $this->expectException(RuntimeException::class);
         $pdoStatement = $this->createMock(\PDOStatement::class);
@@ -186,7 +176,7 @@ class ReplicationTest extends TestCase
         $replication->fetchStatus($replica);
     }
 
-    public function fetchStatusErrorsWithBadReturnedDataDataProvider(): array
+    public static function fetchStatusErrorsWithBadReturnedDataDataProvider(): array
     {
         return [
             [false],
@@ -199,9 +189,7 @@ class ReplicationTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider dataThrottleSleepTime
-     */
+    #[DataProvider('dataThrottleSleepTime')]
     public function testThrottleSleepTime(int $secondsBehind, int $expectedSleep): void
     {
         $this->storage->method('getSecondsBehind')
@@ -215,7 +203,7 @@ class ReplicationTest extends TestCase
         (new Replication($this->primary, [$replica], $this->storage))->throttle();
     }
 
-    public function dataThrottleSleepTime(): array
+    public static function dataThrottleSleepTime(): array
     {
         return [
             'no-lag' => [0, 0],

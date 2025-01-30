@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Phlib\DbHelperReplication\Replication;
 
 use Phlib\DbHelperReplication\Exception\RuntimeException;
+use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
@@ -14,10 +15,7 @@ use PHPUnit\Framework\TestCase;
  */
 class MemcacheTest extends TestCase
 {
-    /**
-     * @var \Memcached|MockObject
-     */
-    private MockObject $memcache;
+    private \Memcached&MockObject $memcache;
 
     private Memcache $storage;
 
@@ -127,9 +125,7 @@ class MemcacheTest extends TestCase
         $this->storage->setHistory($host, $history);
     }
 
-    /**
-     * @group integration
-     */
+    #[Group('integration')]
     public function testCreateFromConfig(): void
     {
         if ((bool)getenv('INTEGRATION_MEMCACHE_ENABLED') !== true) {

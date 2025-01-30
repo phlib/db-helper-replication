@@ -15,15 +15,9 @@ use PHPUnit\Framework\MockObject\MockObject;
  */
 class ReplicationMonitorCommandTest extends ConsoleTestCase
 {
-    /**
-     * @var ReplicationFactory|MockObject
-     */
-    private MockObject $replicationFactory;
+    private ReplicationFactory&MockObject $replicationFactory;
 
-    /**
-     * @var Replication|MockObject
-     */
-    private MockObject $replication;
+    private Replication&MockObject $replication;
 
     protected function setUp(): void
     {

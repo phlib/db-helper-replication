@@ -21,10 +21,7 @@ class ConsoleTestCase extends TestCase
 
     protected CommandTester $commandTester;
 
-    /**
-     * @var ConfigurationHelper|MockObject
-     */
-    protected MockObject $configurationHelper;
+    protected ConfigurationHelper&MockObject $configurationHelper;
 
     protected function setUp(): void
     {
