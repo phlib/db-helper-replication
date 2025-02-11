@@ -32,7 +32,7 @@ class ReplicationFactory
         }
         if (!method_exists($storageClass, 'createFromConfig')) {
             throw new InvalidArgumentException(
-                "Storage class '{$storageClass}' is missing required method 'createFromConfig'."
+                "Storage class '{$storageClass}' is missing required method 'createFromConfig'.",
             );
         }
         $storage = call_user_func_array([$storageClass, 'createFromConfig'], $config['storage']['args']);
